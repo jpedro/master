@@ -27,14 +27,14 @@ Commands:
 
 ## Environment variables
 
-| Name              | Default                       |
-| ----------------- | ----------------------------- |
-| MASTER_LIST       | `~/.config/master/list.txt`   |
-| MASTER_USERNAME   | (None)                        |
-| MASTER_PASSWORD   | (None)                        |
-| MASTER_SEPARATOR  | `-`                           |
-| MASTER_LENGTH     | `6`                           |
-| MASTER_CHUNKS     | `6`                           |
+| Name                | Default                       |
+| ------------------- | ----------------------------- |
+| `MASTER_LIST`       | `~/.config/master/list.txt`   |
+| `MASTER_USERNAME`   | (None)                        |
+| `MASTER_PASSWORD`   | (None)                        |
+| `MASTER_SEPARATOR`  | `-`                           |
+| `MASTER_LENGTH`     | `6`                           |
+| `MASTER_CHUNKS`     | `6`                           |
 
 If you don't set the `MASTER_USERNAME` or the `MASTER_PASSWORD` you will
 be prompted on them.
