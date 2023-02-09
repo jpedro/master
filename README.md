@@ -11,11 +11,15 @@ Generates deterministic passwords for services.
 ## Usage
 
 ```
-$ master
-USAGE
-    master [ls]         Lists all stored services
-    master get NAME     Gets the password for service NAME
-    master rm NAME      Removes service NAME from the stored list
-    master version      Shows the version
-    master help         Shows this help
+$ master --help
+Usage: master [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  get      Gets the deterministic password for SERVICE.
+  ls       Lists all stored services.
+  rm       Removes SERVICE from the stored list.
+  version  Shows the version.
 ```
