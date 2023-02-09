@@ -1,16 +1,14 @@
 from setuptools import setup
 from master import VERSION
 
-readme = open("README.md", "r").read()
-
 setup(
     name="master",
     version=VERSION,
     description="Generates deterministic passwords for services",
-    long_description=readme,
+    long_description=open("README.md", "r").read(),
     long_description_content_type="text/markdown",
-    author="ptdorf",
-    author_email="ptdorf@gmail.com",
+    author="jpedro",
+    author_email="jpedro.barbosa@gmail.com",
     url="https://github.com/jpedro/master",
     download_url="https://github.com/jpedro/master/tarball/master",
     keywords="deterministic password",
