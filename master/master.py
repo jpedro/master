@@ -39,7 +39,7 @@ class Master:
         if len(self.USERNAME) > 0:
             username = self.USERNAME
         else:
-            prompt = "Enter your master username: "
+            prompt = "Enter your username: "
             username = getpass.getpass(prompt=prompt)
 
         if len(self.PASSWORD) > 0:
