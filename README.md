@@ -36,5 +36,5 @@ Commands:
 | `MASTER_LENGTH`     | `6`                           |
 | `MASTER_CHUNKS`     | `6`                           |
 
-***:** If you don't set the `MASTER_USERNAME` or the `MASTER_PASSWORD` you will
+*** Note:** If you don't set the `MASTER_USERNAME` or the `MASTER_PASSWORD` you will
 be prompted on them.
