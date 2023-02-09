@@ -2,6 +2,15 @@
 
 Generates deterministic passwords for services.
 
+This uses a combination of `username + password + service` to generate
+the same password, over and over again, thus eliminating the need to
+store, maintain and back up generated passwords.
+
+The username and password are not stored anywhere. A service name
+list is kept under the file `~/.config/master/list.txt` (or whatever
+`MASTER_LIST` points to) purely for autocompletion (which will be
+added later).
+
 
 ## Install
 
