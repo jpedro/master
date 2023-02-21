@@ -10,6 +10,7 @@ import re
 class Master:
 
     DEBUG     = bool(os.environ.get("MASTER_DEBUG", ""))
+    # USERNAME  = os.environ.get("USER", "Anonymous coward")
     USERNAME  = os.environ.get("MASTER_USERNAME", "")
     PASSWORD  = os.environ.get("MASTER_PASSWORD", "")
     SEPARATOR = os.environ.get("MASTER_SEPARATOR", "-")
@@ -27,7 +28,7 @@ class Master:
             cls.debug(f"File {self.path} doesn't exit.")
             return services
 
-        with open(path, "r") as f:
+        with open(self.path, "r") as f:
             for line in f.readlines():
                 services.add(line.strip())
 

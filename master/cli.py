@@ -22,28 +22,21 @@ from . import VERSION
 from .master import Master
 
 
-MASTER_LIST = os.environ.get(
-    "MASTER_LIST",
-    os.path.expanduser("~/.config/master/list.txt")
-)
+USER_HOME = os.path.expanduser("~")
+MASTER_LIST = os.environ.get("MASTER_LIST", f"{USER_HOME}/.config/master/list.txt")
+
 
 @click.group(invoke_without_command=True)
 @click.pass_context
 def cli(ctx):
-    if ctx.invoked_subcommand:
-        pass
-    else:
+    if not ctx.invoked_subcommand:
         ls()
 
 
 @cli.command()
 @click.argument("service", type=str)
-@click.option("--chunks", type=int, default=Master.CHUNKS,
-    help=f"The number of chunks (default: {Master.CHUNKS})"
-)
-@click.option("--counter", type=int, default=0,
-    help="The password counter (default: 0)"
-)
+@click.option("--chunks", type=int, default=Master.CHUNKS, help=f"The number of chunks (default: {Master.CHUNKS})")
+@click.option("--counter", type=int, default=0, help="The password counter (default: 0)")
 def get(service: str, chunks: int, counter: int):
     """Gets the deterministic password for SERVICE."""
 
@@ -66,7 +59,7 @@ def ls():
 
 @cli.command()
 def version():
-    """Shows the version."""
+    """Prints the version."""
     print(f"v{VERSION}")
 
 
