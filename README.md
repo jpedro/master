@@ -1,6 +1,6 @@
 # Master
 
-![Strong password](https://blogs.quickheal.com/wp-content/uploads/2017/11/5_password_mistakes_people_make.jpg)
+![Strong password](.github/assets/password.jpeg)
 
 Deterministic passwords for everyone.
 
@@ -8,10 +8,11 @@ This uses a combination of `username + password + service + counter`
 to generate the same password, over and over again, thus eliminating
 the need to store, maintain and back up other generated passwords.
 
-The username and password **are not stored anywhere**. The used service
-name list is kept under the file `~/.config/master/list.txt` (or whatever
-`MASTER_LIST` points to) *purely for autocompletion*, which will be
-added later.
+The username and password **are not stored anywhere**.
+
+The used service name list is kept under the file `~/.config/master/list.txt`
+(or whatever `MASTER_LIST` points to) *purely for autocompletion*,
+which will be added later.
 
 
 ## Install
