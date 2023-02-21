@@ -14,7 +14,10 @@ added later).
 
 ## Install
 
-    pip install master
+    pip install masterpass
+
+Yes. The package is called `masterpass` but the binary is called
+`master`.
 
 
 ## Usage

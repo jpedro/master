@@ -28,5 +28,5 @@ test: build ### Tests the package locally
 
 
 .PHONY: release
-release: ### Deploys the package to pypi
+release: build ### Deploys the package to pypi
 	python3 -m twine upload dist/*
