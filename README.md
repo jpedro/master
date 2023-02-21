@@ -4,7 +4,7 @@
 
 Deterministic passwords for everyone.
 
-This uses a combination of `username + password + service + counter`
+This uses a sha256 hashed combination of `username + password + service`
 to generate the same password, over and over again, thus eliminating
 the need to store, maintain and back up other generated passwords.
 
