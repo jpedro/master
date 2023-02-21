@@ -2,7 +2,7 @@ from setuptools import setup
 from master import VERSION
 
 setup(
-    name="master",
+    name="masterpass",
     version=VERSION,
     description="Generates deterministic passwords for services",
     long_description=open("README.md", "r").read(),
