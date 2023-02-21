@@ -1,6 +1,6 @@
 # Master
 
-Generates deterministic passwords for services.
+Deterministic passwords for everyone.
 
 This uses a combination of `username + password + service + counter`
 to generate the same password, over and over again, thus eliminating
