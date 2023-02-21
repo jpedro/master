@@ -17,7 +17,8 @@ added later).
     pip install masterpass
 
 Yes. The package is called `masterpass` but the binary is called
-`master`.
+`master`. To be fixed after [#2582](https://github.com/pypi/support/issues/2582)
+is resolved.
 
 
 ## Usage
