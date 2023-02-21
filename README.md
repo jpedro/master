@@ -16,7 +16,7 @@ added later).
 
     pip install masterpass
 
-Yes. The package is called `masterpass` but the binary is called
+Yes, yes. The package is called `masterpass` but the binary is called
 `master`. To be fixed after [#2582](https://github.com/pypi/support/issues/2582)
 is resolved.
 
