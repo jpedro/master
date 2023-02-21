@@ -2,6 +2,9 @@
 
 Deterministic passwords for everyone.
 
+![Strong password](https://blogs.quickheal.com/wp-content/uploads/2017/11/5_password_mistakes_people_make.jpg)
+
+
 This uses a combination of `username + password + service + counter`
 to generate the same password, over and over again, thus eliminating
 the need to store, maintain and back up other generated passwords.
