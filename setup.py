@@ -4,7 +4,7 @@ from master import VERSION
 setup(
     name="masterpass",
     version=VERSION,
-    description="Generates deterministic passwords for services",
+    description="Deterministic passwords for everyone",
     long_description=open("README.md", "r").read(),
     long_description_content_type="text/markdown",
     author="jpedro",
