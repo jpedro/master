@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>HERE</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<form onSubmit="return false;">
+    <input
+        type="password" id="password"
+        placeholder="Your master password"
+        autocomplete="off" /><br />
+    <input
+        type="text" name="value" id="value"
+        placeholder="Your test goes here"
+        autocomplete="off" autofocus />
+</form>
+<div id="hashed"></div>
+<script>
+const sha256 = async (message) => {
+    // const utf8 = new TextEncoder().encode(string);
+    const encoder = new TextEncoder();
+    const data = encoder.encode(message);
+    const buffer = await crypto.subtle.digest("SHA-256", data);
+    const bytes = Array.from(new Uint8Array(buffer));
+    console.log("bytes  ", bytes);
+    console.log("btoa   ", btoa(bytes));
+    console.log("atob   ", btoa(buffer));
+    // return bytes;
+        //     .then(buffer => {
+        //         const hashArray = Array.from(new Uint8Array(buffer));
+        //         const hashHex = hashArray
+        //     // .map((bytes) => bytes.toString(16).padStart(2, '0'))
+        //     .map(bytes => bytes)
+        //     .join('');
+        //     return hashHex;
+        // });
+    const hex = bytes
+        .map(b => b.toString(16).padStart(2, "0"))
+        .join("");
+    return bytes;
+};
+
+const value = document.getElementById("value");
+const password = document.getElementById("password");
+const hashed = document.getElementById("hashed");
+value.addEventListener("keypress", ev => {
+    if (ev.keyCode != 13) {
+        console.log("onKeyPress: ev.keyCode", ev.keyCode);
+        return;
+    }
+    // console.log("onKeyUp: ev", ev);
+    // console.log("value", ev.target.value);
+    const secret = password.value;
+    const source = "pedro:" + secret + ":" + ev.target.value + ":0";
+    sha256(source)
+        .then(hex => {
+            console.log("source ", source);
+            console.log("hex    ", hex);
+            const encoded = btoa(hex);
+            console.log("encoded", encoded);
+            // const regex = /[^0-9A-Za-z]/g;
+            // const replaced = encoded.replace(regex, "");
+            // console.log("replaced", replaced);
+            // const chunks = 6;
+            // const length = 6;
+            // let parts = [];
+            // for (let i = 0; i < chunks; i++) {
+            //     parts.push(replaced.slice(i * length, (i + 1) * length));
+            // }
+            // console.log("parts", parts);
+            // const password = parts.join("-");
+            // console.log("password", password);
+            hashed.innerText = encoded;
+        })
+        .catch(err => {
+            console.error("err", err);
+        })
+    ;
+})
+</script>
+</body>
+</html>
