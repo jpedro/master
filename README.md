@@ -28,16 +28,17 @@ is resolved.
 
 ```
 $ master --help
-Usage: master [OPTIONS] COMMAND [ARGS]...
 
-Options:
-  --help  Show this message and exit.
+NAME
+    master -- Generates deterministic passwords for services
 
-Commands:
-  get      Gets the deterministic password for SERVICE.
-  ls       Lists all stored services.
-  rm       Removes SERVICE from the stored list.
-  version  Shows the version.
+USAGE
+    master                  Lists all stored services
+    master NAME             Gets the password for service NAME
+    master -r, --rm NAME    Removes service NAME from the stored list
+    master -v, --version    Shows the version
+    master -h, --help       Shows this help
+
 ```
 
 

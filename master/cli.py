@@ -4,15 +4,14 @@ NAME
     master -- Generates deterministic passwords for services
 
 USAGE
-    master [ls]         Lists all stored services
-    master get NAME     Gets the password for service NAME
-    master rm NAME      Removes service NAME from the stored list
-    master version      Shows the version
-    master help         Shows this help
+    master                  Lists all stored services
+    master NAME             Gets the password for service NAME
+    master -r, --rm NAME    Removes service NAME from the stored list
+    master -v, --version    Shows the version
+    master -h, --help       Shows this help
 """
 import os
 import sys
-import click
 import hashlib
 import base64
 import getpass
@@ -26,52 +25,66 @@ USER_HOME = os.path.expanduser("~")
 MASTER_LIST = os.environ.get("MASTER_LIST", f"{USER_HOME}/.config/master/list.txt")
 
 
-@click.group(invoke_without_command=True)
-@click.pass_context
-def cli(ctx):
-    if not ctx.invoked_subcommand:
-        ls()
+class Cli:
+
+    def get(self, service: str, chunks: int = Master.CHUNKS, counter: int = 0):
+        """Gets the deterministic password for SERVICE."""
+
+        master = Master(MASTER_LIST)
+        services = master.load()
+        services.add(service)
+        master.save(services)
+
+        password = master.generate(service, chunks, counter)
+        print(password)
 
 
-@cli.command()
-@click.argument("service", type=str)
-@click.option("--chunks", type=int, default=Master.CHUNKS, help=f"The number of chunks (default: {Master.CHUNKS})")
-@click.option("--counter", type=int, default=0, help="The password counter (default: 0)")
-def get(service: str, chunks: int, counter: int):
-    """Gets the deterministic password for SERVICE."""
-
-    master = Master(MASTER_LIST)
-    services = master.load()
-    services.add(service)
-    master.save(services)
-
-    password = master.generate(service, chunks, counter)
-    print(password)
+    def ls(self):
+        """Lists all stored services."""
+        master = Master(MASTER_LIST)
+        for service in master.load():
+            print(service)
 
 
-@cli.command()
-def ls():
-    """Lists all stored services."""
-    master = Master(MASTER_LIST)
-    for service in master.load():
-        print(service)
+    def version(self):
+        """Prints the version."""
+        print(f"v{VERSION}")
 
 
-@cli.command()
-def version():
-    """Prints the version."""
-    print(f"v{VERSION}")
+    def remove(self, service: str):
+        """Removes SERVICE from the stored list."""
+        master = Master(MASTER_LIST)
+        services = master.load()
+        services.discard(service)
+        master.save(services)
 
 
-@cli.command()
-@click.argument("service", type=str)
-def rm(service: str):
-    """Removes SERVICE from the stored list."""
-    master = Master(MASTER_LIST)
-    services = master.load()
-    services.discard(service)
-    master.save(services)
+def main():
+    cli = Cli()
+    cmd = sys.argv[1] if len(sys.argv) > 1 else None
+    name = sys.argv[2] if len(sys.argv) > 2 else None
+
+    if cmd is None:
+        cli.ls()
+        return
+
+    if cmd in ["-h", "--help"]:
+        print(__doc__)
+        return
+
+    if cmd in ["-v", "--version"]:
+        print(f"v{VERSION}")
+        return
+
+    if cmd in ["-r", "--rm"]:
+        if name is None:
+            print("Usage: master --rm NAME")
+            return 1
+
+        return cli.remove(name)
+
+    cli.get(cmd)
 
 
 if __name__ == "__main__":
-    cli()
+    exit(main())

@@ -25,7 +25,7 @@ class Master:
     def load(self) -> set:
         services = set()
         if not os.path.isfile(self.path):
-            cls.debug(f"File {self.path} doesn't exit.")
+            self.warn(f"File {self.path} doesn't exit.")
             return services
 
         with open(self.path, "r") as f:
@@ -40,7 +40,7 @@ class Master:
         if len(self.USERNAME) > 0:
             username = self.USERNAME
         else:
-            prompt = "Enter your username: "
+            prompt = "Enter your master username: "
             username = getpass.getpass(prompt=prompt)
 
         if len(self.PASSWORD) > 0:
@@ -82,3 +82,7 @@ class Master:
             return
 
         print(f"\033[2m{message}\033[0m", file=sys.stderr)
+
+
+    def warn(self, message: str) -> str:
+        print(f"\033[33;1m{message}\033[0m", file=sys.stderr)

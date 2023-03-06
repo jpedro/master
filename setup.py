@@ -29,7 +29,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "master=master.cli:cli",
+            "master=master.cli:main",
         ],
     },
 )
