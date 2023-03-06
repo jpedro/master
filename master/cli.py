@@ -4,11 +4,11 @@ NAME
     master -- Generates deterministic passwords for services
 
 USAGE
-    master                  Lists all stored services
-    master NAME             Gets the password for service NAME
-    master -r, --rm NAME    Removes service NAME from the stored list
-    master -v, --version    Shows the version
-    master -h, --help       Shows this help
+    master NAME                 Gets the password for service NAME
+    master -l, --list           Lists all stored services
+    master -r, --remove NAME    Removes service NAME from the stored list
+    master -v, --version        Shows the version
+    master -h, --help           Shows this help
 """
 import os
 import sys
@@ -65,7 +65,8 @@ def main():
     name = sys.argv[2] if len(sys.argv) > 2 else None
 
     if cmd is None:
-        cli.ls()
+        # cli.ls()
+        print(__doc__)
         return
 
     if cmd in ["-h", "--help"]:
@@ -76,7 +77,11 @@ def main():
         print(f"v{VERSION}")
         return
 
-    if cmd in ["-r", "--rm"]:
+    if cmd in ["-l", "--list"]:
+        cli.ls()
+        return
+
+    if cmd in ["-r", "--remove"]:
         if name is None:
             print("Usage: master --rm NAME")
             return 1

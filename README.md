@@ -33,11 +33,11 @@ NAME
     master -- Generates deterministic passwords for services
 
 USAGE
-    master                  Lists all stored services
-    master NAME             Gets the password for service NAME
-    master -r, --rm NAME    Removes service NAME from the stored list
-    master -v, --version    Shows the version
-    master -h, --help       Shows this help
+    master NAME                 Gets the password for service NAME
+    master -l, --list           Lists all stored services
+    master -r, --remove NAME    Removes service NAME from the stored list
+    master -v, --version        Shows the version
+    master -h, --help           Shows this help
 
 ```
 

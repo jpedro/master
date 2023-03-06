@@ -24,9 +24,9 @@ setup(
     packages=[
         "master",
     ],
-    install_requires=[
-        "click",
-    ],
+    # install_requires=[
+    #     "click",
+    # ],
     entry_points={
         "console_scripts": [
             "master=master.cli:main",
