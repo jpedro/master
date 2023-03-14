@@ -12,10 +12,6 @@ USAGE
 """
 import os
 import sys
-import hashlib
-import base64
-import getpass
-import re
 
 from . import VERSION
 from .master import Master
@@ -65,7 +61,6 @@ def main():
     name = sys.argv[2] if len(sys.argv) > 2 else None
 
     if cmd is None:
-        # cli.ls()
         print(__doc__)
         return
 
