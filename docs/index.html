@@ -8,7 +8,9 @@
 </head>
 <body>
 <form onSubmit="return false;">
-  <input type="text" placeholder="Your test goes here" name="value" id="value"
+  <input
+    type="text" name="value" id="value"
+    placeholder="Your test goes here"
     autocomplete="off" />
 </form>
 <script>
@@ -22,6 +24,10 @@ const hash = (string) => {
     return hashHex;
   });
 };
+const value = document.getElementById("value");
+value.addEventListener("change", ev => {
+    console.log("onChange: ev", ev);
+})
 </script>
 </body>
 </html>
