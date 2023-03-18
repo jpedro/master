@@ -9,6 +9,10 @@
 <body>
 <form onSubmit="return false;">
     <input
+        type="text" id="username"
+        placeholder="Your master username"
+        autocomplete="off" value="pedro" /><br />
+    <input
         type="password" id="password"
         placeholder="Your master password"
         autocomplete="off" /><br />
@@ -34,6 +38,7 @@ const sha256 = async (message) => {
 };
 
 const value = document.getElementById("value");
+const username = document.getElementById("username");
 const password = document.getElementById("password");
 const hashed = document.getElementById("hashed");
 value.addEventListener("keypress", ev => {
@@ -50,9 +55,7 @@ const generate = () => {
     }
     // console.log("onKeyUp: ev", ev);
     // console.log("value", ev.target.value);
-    const secret = password.value;
-    const value  = value.value;
-    const source = ["pedro", secret, value, 0].join(":");
+    const source = [username.value, password.value, value.value, 0].join(":");
     sha256(source)
         .then(hex => {
             console.log("source ", source);
