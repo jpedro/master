@@ -41,14 +41,17 @@ const value = document.getElementById("value");
 const username = document.getElementById("username");
 const password = document.getElementById("password");
 const hashed = document.getElementById("hashed");
-value.addEventListener("keypress", ev => {
-    generate();
+username.addEventListener("keypress", ev => {
+    generate(ev);
 });
 password.addEventListener("keypress", ev => {
-    generate();
+    generate(ev);
+});
+value.addEventListener("keypress", ev => {
+    generate(ev);
 });
 
-const generate = () => {
+const generate = (ev) => {
     if (ev.keyCode != 13) {
         console.log("onKeyPress: ev.keyCode", ev.keyCode);
         return;
