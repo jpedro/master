@@ -5,6 +5,15 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <title>Testing in the browser</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+code#hashed {
+    background: #ffa;
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 2em;
+    border: 4px solid #ccc;
+}
+</style>
 </head>
 <body>
 <form onSubmit="return false;">
@@ -21,7 +30,7 @@
         placeholder="Your test goes here"
         autocomplete="off" autofocus />
 </form>
-<div id="hashed"></div>
+<pre id="hashed"></pre>
 <script>
 const sha256 = async (message) => {
     const encoder = new TextEncoder();
