@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-<title>HERE</title>
+<title>Testing in the browser</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
@@ -20,7 +20,6 @@
 <div id="hashed"></div>
 <script>
 const sha256 = async (message) => {
-    // const utf8 = new TextEncoder().encode(string);
     const encoder = new TextEncoder();
     const data = encoder.encode(message);
     const buffer = await crypto.subtle.digest("SHA-256", data);
@@ -28,19 +27,10 @@ const sha256 = async (message) => {
     console.log("bytes  ", bytes);
     console.log("btoa   ", btoa(bytes));
     console.log("atob   ", btoa(buffer));
-    // return bytes;
-        //     .then(buffer => {
-        //         const hashArray = Array.from(new Uint8Array(buffer));
-        //         const hashHex = hashArray
-        //     // .map((bytes) => bytes.toString(16).padStart(2, '0'))
-        //     .map(bytes => bytes)
-        //     .join('');
-        //     return hashHex;
-        // });
     const hex = bytes
         .map(b => b.toString(16).padStart(2, "0"))
         .join("");
-    return bytes;
+    return hex;
 };
 
 const value = document.getElementById("value");
