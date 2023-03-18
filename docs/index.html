@@ -6,6 +6,16 @@
 <title>Testing in the browser</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
+body {
+    max-width: 800px;
+    margin: 40px auto;
+}
+form input {
+    padding: 5px;
+    border-radius: 5px;
+    margin: 5px 0;
+    font-size: 1.2em;
+}
 code#hashed {
     background: #ffa;
     padding: 20px;
@@ -16,7 +26,7 @@ code#hashed {
 </style>
 </head>
 <body>
-<form onSubmit="return false;">
+<form onSubmit="generate(); return false;">
     <input
         type="text" id="username"
         placeholder="Your master username"
@@ -51,15 +61,15 @@ const password = document.getElementById("password");
 const value    = document.getElementById("value");
 const hashed   = document.getElementById("hashed");
 
-username.addEventListener("keypress", ev => {
-    generate(ev);
-});
-password.addEventListener("keypress", ev => {
-    generate(ev);
-});
-value.addEventListener("keypress", ev => {
-    generate(ev);
-});
+// username.addEventListener("keypress", ev => {
+//     generate(ev);
+// });
+// password.addEventListener("keypress", ev => {
+//     generate(ev);
+// });
+// value.addEventListener("keypress", ev => {
+//     generate(ev);
+// });
 
 const save = () => {
     localStorage.setItem("username", username.value);
@@ -72,10 +82,10 @@ const load = () => {
 };
 
 const generate = (ev) => {
-    if (ev.keyCode != 13) {
-        console.log("onKeyPress: ev.keyCode", ev.keyCode);
-        return;
-    }
+    // if (ev.keyCode != 13) {
+    //     console.log("onKeyPress: ev.keyCode", ev.keyCode);
+    //     return;
+    // }
     save();
     const source = [username.value, password.value, value.value, 0].join(":");
     sha256(source)
