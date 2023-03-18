@@ -18,6 +18,15 @@ input {
     width: 700px; /* becomes 712px due to padding 2 x 5px + 2 x 1px border*/
     border: 1px solid #aaa;
 }
+#tips {
+    padding: 5px;
+    font-size: 1.2em;
+}
+code {
+    background: #ddd;
+    padding: 3px 5px;
+    border-radius: 3px;
+}
 #hashed {
     background: #f7dc6f;
     --background: #fad7a0;
@@ -44,17 +53,21 @@ input {
 <form onsubmit="generate(); return false;">
     <input
         type="text" id="username"
-        placeholder="Master username"
+        placeholder="Master username" required
         autocomplete="off" value="pedro" /><br />
     <input
         type="password" id="password"
-        placeholder="Master password"
+        placeholder="Master password" required
         autocomplete="off" /><br />
     <input
         type="text" name="value" id="value"
-        placeholder="Service name"
+        placeholder="Service name" required
         autocomplete="off" autofocus />
 </form>
+<div id="tips">
+    Press <code>enter</code> to copy then password
+    and <code>alt</code> to show it.
+</div>
 <pre id="hashed"></pre>
 <script>
 const sha256 = async (message) => {
@@ -90,7 +103,7 @@ const load = () => {
 
 const onKeyUp = (ev) => {
     if (ev.keyCode === 18 && ev.charCode === 0 && ev.metaKey === false && ev.shiftKey === false && ev.ctrlKey === false) {
-        return toggle(true);
+        return toggle(false);
     }
 };
 
@@ -100,7 +113,7 @@ const onKeyDown = (ev) => {
         return hide();
     }
     if (ev.keyCode === 18 && ev.charCode === 0 && ev.metaKey === false && ev.shiftKey === false && ev.ctrlKey === false) {
-        return toggle(false);
+        return toggle(true);
     }
     if (ev.keyCode !== 13) {
         return console.log("onKeyPress: ev.keyCode", ev.keyCode);
@@ -150,17 +163,18 @@ const hide = () => {
         ? "none"
         : "block";
 }
+
 const toggle = (state) => {
     if (state !== undefined) {
         visible = state;
     }
 
     if (visible) {
-        hashed.innerText = "Password copied to clipboard";
-        hashed.classList.remove("visible");
-    } else {
         hashed.innerText = hashed.getAttribute("data-generated");
         hashed.classList.add("visible");
+    } else {
+        hashed.innerText = "Password copied to clipboard";
+        hashed.classList.remove("visible");
     }
     visible = !visible;
     // console.log("visible", visible);
