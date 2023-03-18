@@ -20,6 +20,7 @@ input {
 }
 #hashed {
     background: #f7dc6f;
+    --background: #fad7a0;
     padding: 20px;
     border-radius: 10px;
     font-size: 2em;
@@ -27,6 +28,10 @@ input {
     text-align: center;
     display: none;
     width: 672px; /* Plus 2 x 20px padding  */
+    transition: background-color 0.05s ease;
+}
+#hashed.new {
+    background: #f1c40f;
 }
 #hashed.visible {
     background: #d35400;
@@ -128,6 +133,10 @@ const generate = () => {
             navigator.clipboard.writeText(generated);
             hashed.innerText = "Password copied to clipboard";
             hashed.style.display = "block";
+            hashed.classList.add("new");
+            setTimeout(() => {
+                hashed.classList.remove("new");
+            }, 200);
         })
         .catch(err => {
             console.error("err", err);
