@@ -23,6 +23,7 @@ form input {
     font-size: 2em;
     border: 4px solid #ccc;
     text-align: center;
+    display: none;
 }
 </style>
 </head>
@@ -113,12 +114,18 @@ const generate = () => {
             const password = parts.join("-");
             console.log("password", password);
             hashed.innerText = password;
+            hashed.style.display = "block";
         })
         .catch(err => {
             console.error("err", err);
         })
     ;
 };
+
+const toggle = () => {
+    //
+};
+
 value.addEventListener("keypress", run);
 username.addEventListener("keypress", run);
 password.addEventListener("keypress", run);
