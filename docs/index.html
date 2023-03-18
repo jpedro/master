@@ -52,11 +52,22 @@ value.addEventListener("keypress", ev => {
     generate(ev);
 });
 
+const save = () => {
+    localStorage.setItem("username", username.value);
+    localStorage.setItem("password", password.value);
+};
+
+const load = () => {
+    username.value = localStorage.getItem("username");
+    password.value = localStorage.getItem("password");
+};
+
 const generate = (ev) => {
     if (ev.keyCode != 13) {
         console.log("onKeyPress: ev.keyCode", ev.keyCode);
         return;
     }
+    save();
     const source = [username.value, password.value, value.value, 0].join(":");
     sha256(source)
         .then(hex => {
@@ -83,6 +94,7 @@ const generate = (ev) => {
         })
     ;
 };
+load();
 </script>
 </body>
 </html>
