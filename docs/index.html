@@ -138,9 +138,10 @@ const toggle = () => {
     //     hashed.style.display = "block";
     // }
     if (visible) {
-        hashed.innerText = hashed.getAttribute("data-generated");
-    } else {
         hashed.innerText = "Password copied to clipboard";
+    } else {
+        hashed.innerText = hashed.getAttribute("data-generated");
+        setTimeout(toggle, 2000);
     }
     visible = !visible;
 };
