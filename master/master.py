@@ -64,17 +64,39 @@ class Master:
     def generate(self, service: str, chunks: int = CHUNKS, counter: int = 0) -> str:
         username, password = self.ask()
         source = f"{username}:{password}:{service}:{counter}"
+        print(f"source:   {source}")
         hashed = hashlib.sha256()
         hashed.update(bytes(source, "utf8"))
-        encoded = base64.b64encode(hashed.digest()).decode()
-        cleaned = re.sub(r"[^0-9A-Za-z]", "", encoded)
-        return self.SEPARATOR.join([
-            cleaned[i:i+self.LENGTH] for i in range(
-                0,
-                self.LENGTH * chunks,
-                self.LENGTH
-            )
-        ])
+        digest = hashed.digest()
+        print(f"digest:   {digest} ({type(digest)} {len(digest)})")
+        bb = b"d508f57bf3051ac88ced9c635bb9b290678e1207ec4df296c6b3266e0ec7e212"
+        print(f"bb:       {bb} ({type(bb)} {len(bb)})")
+        print(bb == digest)
+        b64 = base64.b64encode(bb).decode()
+        print(f"b64:      {b64}")
+        encoded = base64.b64encode(digest).decode()
+        print(f"encoded:  {encoded} ({type(encoded)})")
+        # return
+
+        cleaned = re.sub(r"[^0-9A-Za-z]", "", b64)
+        parts = []
+        for i in range(chunks):
+            start = i * self.LENGTH
+            stop = (i + 1) * self.LENGTH
+            parts.append(cleaned[start:stop])
+        print(f"parts: {parts}")
+        password = self.SEPARATOR.join(parts)
+        print(f"password: {password}")
+
+        # password = self.SEPARATOR.join([
+        #     cleaned[i:i+self.LENGTH] for i in range(
+        #         0,
+        #         self.LENGTH * chunks,
+        #         self.LENGTH
+        #     )
+        # ])
+        # print(f"password2: {password}")
+        return encoded
 
 
     def debug(self, message: str) -> str:
