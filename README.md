@@ -55,3 +55,11 @@ USAGE
 
 **Note [1]:** If you don't set the `MASTER_USERNAME` or the
 `MASTER_PASSWORD` you will be prompted for them.
+
+
+## Browser
+
+I'm trying to get the same experience in the browser at
+[jpedro.github.io/master/](https://jpedro.github.io/master/) and one sunny
+day it wilk work.
+
