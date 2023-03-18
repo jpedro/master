@@ -83,17 +83,18 @@ const load = () => {
 };
 
 const onKeyUp = (ev) => {
-    if (ev.keyCode === 18 && ev.charCode === 0) {
-        return toggle();
+    if (ev.keyCode === 18 && ev.charCode === 0 && ev.metaKey === false && ev.shiftKey === false && ev.ctrlKey === false) {
+        return toggle(true);
     }
 };
 
 const onKeyDown = (ev) => {
-    if (ev.keyCode === 27) {
+    // console.log("ev", ev);
+    if (ev.keyCode === 27 && ev.charCode === 0 && ev.metaKey === false && ev.shiftKey === false && ev.ctrlKey === false) {
         return hide();
     }
-    if (ev.keyCode === 18 && ev.charCode === 0) {
-        return toggle();
+    if (ev.keyCode === 18 && ev.charCode === 0 && ev.metaKey === false && ev.shiftKey === false && ev.ctrlKey === false) {
+        return toggle(false);
     }
     if (ev.keyCode !== 13) {
         return console.log("onKeyPress: ev.keyCode", ev.keyCode);
@@ -139,8 +140,11 @@ const hide = () => {
         ? "none"
         : "block";
 }
-const toggle = () => {
-    // force = force === undefined || visible;
+const toggle = (state) => {
+    if (state !== undefined) {
+        visible = state;
+    }
+
     if (visible) {
         hashed.innerText = "Password copied to clipboard";
         hashed.classList.remove("visible");
