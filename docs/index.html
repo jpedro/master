@@ -83,7 +83,7 @@ const load = () => {
     password.value = localStorage.getItem("password");
 };
 
-const run = (ev) => {
+const onKeyUp = (ev) => {
     console.log("ev", ev);
     if (ev.keyCode === 18 && charCode === 0) {
         toggle();
@@ -134,7 +134,7 @@ const toggle = () => {
     }
 };
 
-document.onkeyup = run;
+document.onkeyup = onKeyUp;
 // value.addEventListener("keypress", run);
 // username.addEventListener("keypress", run);
 // password.addEventListener("keypress", run);
