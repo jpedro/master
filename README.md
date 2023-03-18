@@ -60,6 +60,5 @@ USAGE
 ## Browser
 
 I'm trying to get the same experience in the browser at
-[jpedro.github.io/master/](https://jpedro.github.io/master/) and one sunny
+[jpedro.github.io/master](https://jpedro.github.io/master/) and one sunny
 day it wilk work.
-
