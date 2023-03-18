@@ -67,6 +67,7 @@ const value    = document.getElementById("value");
 const hashed   = document.getElementById("hashed");
 
 let visible  = false;
+let progress = false;
 
 // username.addEventListener("keypress", ev => {
 //     generate(ev);
@@ -133,6 +134,9 @@ const generate = () => {
 };
 
 const toggle = () => {
+    if (progress) {
+        return;
+    }
     // if (hashed.style.display === "block") {
     //     hashed.style.display = "none";
     // } else {
@@ -142,8 +146,12 @@ const toggle = () => {
         hashed.innerText = "Password copied to clipboard";
     } else {
         hashed.innerText = hashed.getAttribute("data-generated");
-        setTimeout(toggle, 300);
+        setTimeout(() => {
+            progress = true;
+            toggle();
+        }, 300);
     }
+    progress = false;
     visible = !visible;
     console.log("visible", visible);
 };
