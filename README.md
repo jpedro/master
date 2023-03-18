@@ -4,6 +4,10 @@
 
 Deterministic passwords for everyone.
 
+> **Note**
+>
+> Inspired by [spectre.app](https://spectre.app/).
+
 This uses a sha256 hashed combination of `username + password + service`
 to generate the same password, over and over again, thus eliminating
 the need to store, maintain and back up other generated passwords.
