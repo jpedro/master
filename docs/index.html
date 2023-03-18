@@ -37,6 +37,13 @@ const value = document.getElementById("value");
 const password = document.getElementById("password");
 const hashed = document.getElementById("hashed");
 value.addEventListener("keypress", ev => {
+    generate();
+});
+password.addEventListener("keypress", ev => {
+    generate();
+});
+
+const generate = () => {
     if (ev.keyCode != 13) {
         console.log("onKeyPress: ev.keyCode", ev.keyCode);
         return;
@@ -44,7 +51,8 @@ value.addEventListener("keypress", ev => {
     // console.log("onKeyUp: ev", ev);
     // console.log("value", ev.target.value);
     const secret = password.value;
-    const source = "pedro:" + secret + ":" + ev.target.value + ":0";
+    const value  = value.value;
+    const source = ["pedro", secret, value, 0].join(":");
     sha256(source)
         .then(hex => {
             console.log("source ", source);
@@ -69,7 +77,7 @@ value.addEventListener("keypress", ev => {
             console.error("err", err);
         })
     ;
-})
+};
 </script>
 </body>
 </html>
