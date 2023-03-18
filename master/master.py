@@ -76,7 +76,6 @@ class Master:
         print(f"b64:      {b64}")
         encoded = base64.b64encode(digest).decode()
         print(f"encoded:  {encoded} ({type(encoded)})")
-        # return
 
         cleaned = re.sub(r"[^0-9A-Za-z]", "", b64)
         parts = []
@@ -87,16 +86,7 @@ class Master:
         print(f"parts: {parts}")
         password = self.SEPARATOR.join(parts)
         print(f"password: {password}")
-
-        # password = self.SEPARATOR.join([
-        #     cleaned[i:i+self.LENGTH] for i in range(
-        #         0,
-        #         self.LENGTH * chunks,
-        #         self.LENGTH
-        #     )
-        # ])
-        # print(f"password2: {password}")
-        return encoded
+        return password
 
 
     def debug(self, message: str) -> str:

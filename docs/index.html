@@ -37,10 +37,11 @@ const sha256 = async (message) => {
     return hex;
 };
 
-const value = document.getElementById("value");
 const username = document.getElementById("username");
 const password = document.getElementById("password");
-const hashed = document.getElementById("hashed");
+const value    = document.getElementById("value");
+const hashed   = document.getElementById("hashed");
+
 username.addEventListener("keypress", ev => {
     generate(ev);
 });
@@ -56,8 +57,6 @@ const generate = (ev) => {
         console.log("onKeyPress: ev.keyCode", ev.keyCode);
         return;
     }
-    // console.log("onKeyUp: ev", ev);
-    // console.log("value", ev.target.value);
     const source = [username.value, password.value, value.value, 0].join(":");
     sha256(source)
         .then(hex => {
@@ -65,19 +64,19 @@ const generate = (ev) => {
             console.log("hex    ", hex);
             const encoded = btoa(hex);
             console.log("encoded", encoded);
-            // const regex = /[^0-9A-Za-z]/g;
-            // const replaced = encoded.replace(regex, "");
-            // console.log("replaced", replaced);
-            // const chunks = 6;
-            // const length = 6;
-            // let parts = [];
-            // for (let i = 0; i < chunks; i++) {
-            //     parts.push(replaced.slice(i * length, (i + 1) * length));
-            // }
-            // console.log("parts", parts);
-            // const password = parts.join("-");
-            // console.log("password", password);
-            hashed.innerText = encoded;
+            const regex = /[^0-9A-Za-z]/g;
+            const replaced = encoded.replace(regex, "");
+            console.log("replaced", replaced);
+            const chunks = 6;
+            const length = 6;
+            let parts = [];
+            for (let i = 0; i < chunks; i++) {
+                parts.push(replaced.slice(i * length, (i + 1) * length));
+            }
+            console.log("parts", parts);
+            const password = parts.join("-");
+            console.log("password", password);
+            hashed.innerText = password;
         })
         .catch(err => {
             console.error("err", err);
