@@ -142,7 +142,7 @@ const toggle = () => {
         hashed.innerText = "Password copied to clipboard";
     } else {
         hashed.innerText = hashed.getAttribute("data-generated");
-        setTimeout(toggle, 500);
+        setTimeout(toggle, 300);
     }
     visible = !visible;
     console.log("visible", visible);
