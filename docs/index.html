@@ -71,10 +71,6 @@ const hashed   = document.getElementById("hashed");
 // value.addEventListener("keypress", ev => {
 //     generate(ev);
 // });
-value.addEventListener("keypress", run);
-username.addEventListener("keypress", run);
-password.addEventListener("keypress", run);
-
 const save = () => {
     localStorage.setItem("username", username.value);
     localStorage.setItem("password", password.value);
@@ -122,6 +118,10 @@ const generate = () => {
         })
     ;
 };
+value.addEventListener("keypress", run);
+username.addEventListener("keypress", run);
+password.addEventListener("keypress", run);
+
 load();
 </script>
 </body>
