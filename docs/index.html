@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Testing in the browser</title>
+<title>Master password</title>
 <link rel="shortcut icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔐</text></svg>">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
@@ -65,6 +65,7 @@ const username = document.getElementById("username");
 const password = document.getElementById("password");
 const value    = document.getElementById("value");
 const hashed   = document.getElementById("hashed");
+const visible  = false;
 
 // username.addEventListener("keypress", ev => {
 //     generate(ev);
@@ -117,9 +118,11 @@ const generate = () => {
                 parts.push(replaced.slice(i * length, (i + 1) * length));
             }
             console.log("parts", parts);
-            const password = parts.join("-");
-            console.log("password", password);
-            hashed.innerText = password;
+            const generated = parts.join("-");
+            console.log("generated", generated);
+            hashed.setAttribute("data-generated", generated);
+            navigator.clipboard.writeText(generated);
+            hashed.innerText = "Password copied to clipboard";
             hashed.style.display = "block";
         })
         .catch(err => {
@@ -129,17 +132,20 @@ const generate = () => {
 };
 
 const toggle = () => {
-    if (hashed.style.display === "block") {
-        hashed.style.display = "none";
+    // if (hashed.style.display === "block") {
+    //     hashed.style.display = "none";
+    // } else {
+    //     hashed.style.display = "block";
+    // }
+    if (visible) {
+        hashed.innerText = hashed.getAttribute("data-generated");
     } else {
-        hashed.style.display = "block";
+        hashed.innerText = "Password copied to clipboard";
     }
+    visible = !visible;
 };
 
 document.onkeyup = onKeyUp;
-// value.addEventListener("keypress", run);
-// username.addEventListener("keypress", run);
-// password.addEventListener("keypress", run);
 
 load();
 </script>
