@@ -29,7 +29,7 @@ form input {
 </head>
 <body>
 <h1>Master password</h1>
-<form onSubmit="generate(); return false;">
+<form onsubmit="generate(); return false;">
     <input
         type="text" id="username"
         placeholder="Master username"
@@ -126,6 +126,7 @@ const toggle = () => {
     //
 };
 
+document.onkeyup = run;
 // value.addEventListener("keypress", run);
 // username.addEventListener("keypress", run);
 // password.addEventListener("keypress", run);
