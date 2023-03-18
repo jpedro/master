@@ -19,13 +19,17 @@ input {
     border: 1px solid #aaa;
 }
 #hashed {
-    background: #ffa;
+    background: #ff8;
     padding: 20px;
     border-radius: 10px;
     font-size: 2em;
-    border: 4px solid #ccc;
+    --border: 4px solid #ccc;
     text-align: center;
     display: none;
+}
+#hashed.visible {
+    background: #f5b7b1;
+    --color: #fff;
 }
 </style>
 </head>
@@ -67,17 +71,7 @@ const value    = document.getElementById("value");
 const hashed   = document.getElementById("hashed");
 
 let visible  = false;
-let progress = false;
 
-// username.addEventListener("keypress", ev => {
-//     generate(ev);
-// });
-// password.addEventListener("keypress", ev => {
-//     generate(ev);
-// });
-// value.addEventListener("keypress", ev => {
-//     generate(ev);
-// });
 const save = () => {
     localStorage.setItem("username", username.value);
     localStorage.setItem("password", password.value);
@@ -89,14 +83,20 @@ const load = () => {
 };
 
 const onKeyUp = (ev) => {
-    console.log("ev", ev);
     if (ev.keyCode === 18 && ev.charCode === 0) {
-        toggle();
-        return;
+        return toggle();
+    }
+};
+
+const onKeyDown = (ev) => {
+    if (ev.keyCode === 27) {
+        return hide();
+    }
+    if (ev.keyCode === 18 && ev.charCode === 0) {
+        return toggle();
     }
     if (ev.keyCode !== 13) {
-        console.log("onKeyPress: ev.keyCode", ev.keyCode);
-        return;
+        return console.log("onKeyPress: ev.keyCode", ev.keyCode);
     }
     generate();
 };
@@ -133,29 +133,26 @@ const generate = () => {
     ;
 };
 
+const hide = () => {
+    hashed.style.display =
+        hashed.style.display === "block"
+        ? "none"
+        : "block";
+}
 const toggle = () => {
-    if (progress) {
-        return;
-    }
-    // if (hashed.style.display === "block") {
-    //     hashed.style.display = "none";
-    // } else {
-    //     hashed.style.display = "block";
-    // }
+    // force = force === undefined || visible;
     if (visible) {
         hashed.innerText = "Password copied to clipboard";
+        hashed.classList.remove("visible");
     } else {
         hashed.innerText = hashed.getAttribute("data-generated");
-        setTimeout(() => {
-            progress = true;
-            toggle();
-        }, 300);
+        hashed.classList.add("visible");
     }
-    progress = false;
     visible = !visible;
-    console.log("visible", visible);
+    // console.log("visible", visible);
 };
 
+document.onkeydown = onKeyDown;
 document.onkeyup = onKeyUp;
 
 load();
