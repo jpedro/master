@@ -48,7 +48,7 @@ value.addEventListener("keypress", ev => {
     }
     // console.log("onKeyUp: ev", ev);
     // console.log("value", ev.target.value);
-    const source = "pedro:AMFTcnmw:" + ev.target.value + ":0";
+    const source = "pedro:pp:" + ev.target.value + ":0";
     sha256(source)
         .then(hex => {
             console.log("source ", source);
