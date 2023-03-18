@@ -1,6 +1,6 @@
 # Master
 
-![Strong password](https://raw.githubusercontent.com/jpedro/master/master/.github/assets/password.jpeg)
+<!-- ![Pictutre](https://raw.githubusercontent.com/jpedro/master/master/.github/assets/password.jpg) -->
 <!-- ![Strong password](https://raw.githubusercontent.com/jpedro/master/master/.github/assets/giphy.gif) -->
 
 Deterministic passwords for everyone.
