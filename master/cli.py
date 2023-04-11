@@ -15,6 +15,7 @@ import sys
 
 from . import VERSION
 from .master import Master
+from .logger import Logger
 
 
 USER_HOME = os.path.expanduser("~")
@@ -23,6 +24,7 @@ MASTER_LIST = os.environ.get("MASTER_LIST", f"{USER_HOME}/.config/master/list.tx
 
 class Cli:
 
+    @Logger.trace()
     def get(self, service: str, chunks: int = Master.CHUNKS, counter: int = 0):
         """Gets the deterministic password for SERVICE."""
 
@@ -34,7 +36,7 @@ class Cli:
         password = master.generate(service, chunks, counter)
         print(password)
 
-
+    @Logger.trace()
     def ls(self):
         """Lists all stored services."""
         master = Master(MASTER_LIST)
@@ -42,11 +44,13 @@ class Cli:
             print(service)
 
 
+    @Logger.trace()
     def version(self):
         """Prints the version."""
         print(f"v{VERSION}")
 
 
+    @Logger.trace()
     def remove(self, service: str):
         """Removes SERVICE from the stored list."""
         master = Master(MASTER_LIST)
