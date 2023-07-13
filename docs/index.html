@@ -33,12 +33,14 @@ code {
     --background: #fad7a0;
     padding: 20px;
     border-radius: 10px;
-    font-size: 2em;
+    font-size: 1.5em;
     --border: 4px solid #ccc;
     text-align: center;
-    display: none;
-    width: 672px; /* Plus 2 x 20px padding  */
+    --display: none;
+    --width: 672px; /* Plus 2 x 20px padding  */
+    height: 2.5em;
     transition: background-color 0.05s ease;
+    color: #000;
 }
 #hashed.new {
     background: #f1c40f;
@@ -53,7 +55,7 @@ code {
 <h1>Master password</h1>
 <form onsubmit="generate(); return false;">
     <input
-        type="text" id="username"
+        type="password" id="username"
         placeholder="Master username" required
         autocomplete="off" value="pedro" /><br />
     <input
@@ -102,23 +104,39 @@ const load = () => {
     password.value = localStorage.getItem("password");
 };
 
+const isKeyboardEmpty = (ev) => {
+    return (
+        ev.charCode === 0
+        && ev.metaKey === false
+        && ev.shiftKey === false
+        && ev.ctrlKey === false
+    )
+}
+
 const onKeyUp = (ev) => {
-    if (ev.keyCode === 18 && ev.charCode === 0 && ev.metaKey === false && ev.shiftKey === false && ev.ctrlKey === false) {
+    // if (ev.keyCode === 18 && ev.charCode === 0 && ev.metaKey === false && ev.shiftKey === false && ev.ctrlKey === false) {
+    if (ev.keyCode === 18 && isKeyboardEmpty(ev)) {
+        console.log("ev.altKey", ev.altKey);
         return toggle(false);
     }
 };
 
 const onKeyDown = (ev) => {
+    console.log("ev.keyCode", ev.keyCode);
     // console.log("ev", ev);
-    if (ev.keyCode === 27 && ev.charCode === 0 && ev.metaKey === false && ev.shiftKey === false && ev.ctrlKey === false) {
+    // if (ev.keyCode === 27 && ev.charCode === 0 && ev.metaKey === false && ev.shiftKey === false && ev.ctrlKey === false) {
+    // Escape
+    if (ev.keyCode === 27 && isKeyboardEmpty(ev)) {
         return hide();
     }
-    if (ev.keyCode === 18 && ev.charCode === 0 && ev.metaKey === false && ev.shiftKey === false && ev.ctrlKey === false) {
+    // if (ev.keyCode === 18 && ev.charCode === 0 && ev.metaKey === false && ev.shiftKey === false && ev.ctrlKey === false) {
+    if (ev.keyCode === 18 && isKeyboardEmpty(ev)) {
+        console.log("ev.altKey", ev.altKey);
         return toggle(true);
     }
-    if (ev.keyCode !== 13) {
-        return console.log("onKeyPress: ev.keyCode", ev.keyCode);
-    }
+    // if (ev.keyCode !== 13) {
+    //     return console.log("onKeyPress: ev.keyCode", ev.keyCode);
+    // }
     generate();
 };
 
@@ -145,12 +163,13 @@ const generate = () => {
             console.log("generated", generated);
             hashed.setAttribute("data-generated", generated);
             navigator.clipboard.writeText(generated);
-            hashed.innerText = "Password copied to clipboard";
+            // hashed.innerText = "Password copied to clipboard";
+            hashed.innerText = generated;
             hashed.style.display = "block";
             hashed.classList.add("new");
-            setTimeout(() => {
-                hashed.classList.remove("new");
-            }, 200);
+            // setTimeout(() => {
+            //     hashed.classList.remove("new");
+            // }, 200);
         })
         .catch(err => {
             console.error("err", err);

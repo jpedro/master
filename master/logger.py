@@ -6,6 +6,7 @@ import logging
 class Logger:
 
     envDebug = bool(os.environ.get("MASTER_DEBUG"))
+    print(f"--> envDebug: {envDebug}")
 
     @classmethod
     def trace(cls, *dargs, **dkwargs):
