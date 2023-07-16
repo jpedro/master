@@ -2,12 +2,13 @@
 
 [![Deploy pages](https://github.com/jpedro/master/actions/workflows/pages.yaml/badge.svg)](https://github.com/jpedro/master/actions/workflows/pages.yaml)
 
-![Pictutre](https://raw.githubusercontent.com/jpedro/master/master/docs/strong.jpg)
-<!-- ![Strong password](https://raw.githubusercontent.com/jpedro/master/master/docs/blink.gif) -->
-
 Generates deterministic passwords
 
 Inspired by [spectre.app](https://spectre.app/) but simpler.
+
+
+![Pictutre](https://raw.githubusercontent.com/jpedro/master/master/docs/strong.jpg)
+<!-- ![Strong password](https://raw.githubusercontent.com/jpedro/master/master/docs/blink.gif) -->
 
 This uses a sha256 hashed combination of `username + password + service`
 to generate the same password, thus eliminating the need to store,
