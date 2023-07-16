@@ -63,6 +63,21 @@ class Cli:
         print(random)
 
     @Logger.trace()
+    def start(self):
+        """Asks input for a new SERVICE."""
+        username, password = self.ask()
+        service = input("Enter your service name: ")
+
+        master = Master(MASTER_LIST)
+        master.add(service)
+        master.save()
+
+        master.username = username
+        master.password = password
+        random = master.generate(service)
+        print(random)
+
+    @Logger.trace()
     def ls(self):
         """Lists all stored services."""
         master = Master(MASTER_LIST)
@@ -91,7 +106,7 @@ def main():
     args = sys.argv[1:]
 
     if cmd is None:
-        print(__doc__)
+        cli.start()
         return
 
     if cmd in ["-h", "--help", "help"]:
