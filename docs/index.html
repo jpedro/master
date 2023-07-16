@@ -62,7 +62,7 @@ code {
 </style>
 </head>
 <body data-theme="light">
-<a href="https://github.com/jpedro/master" target="_blank"><h1>Master password</h1></a>
+<h1>Master Password</h1>
 <form onsubmit="generate(); return false;">
     <input
         type="password" id="username"
@@ -83,7 +83,8 @@ code {
 </div>
 <pre id="result"></pre>
 
-<a href="https://github.com/jpedro/master"><img decoding="async" loading="lazy" width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_orange_ff7600.png?resize=149%2C149" class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
+<a href="https://github.com/jpedro/master" style="position: absolute; top: 0; right: 0;"><img decoding="async" loading="lazy" width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_orange_ff7600.png?resize=149%2C149" class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
+
 <script>
 const sha256 = async (message) => {
     const encoder = new TextEncoder();
@@ -147,7 +148,8 @@ const onKeyUp = (ev) => {
         return;
     }
 
-    if (ev.target.id === "service") {
+    console.log("ev", ev);
+    if (ev.target.nodeName === "INPUT") {
         generate();
         return;
     }

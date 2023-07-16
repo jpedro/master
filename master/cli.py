@@ -32,12 +32,11 @@ MASTER_CHUNKS    = int(os.environ.get("MASTER_CHUNKS", "6"))
 
 class Cli:
 
-    def getMaster(self) -> Master:
-        master = Master(MASTER_LIST)
-        master.chunks = MASTER_CHUNKS
-        master.length = MASTER_LENGTH
-        master.separator = MASTER_SEPARATOR
-        return master
+    def init(self):
+        self.master = Master(MASTER_LIST)
+        self.master.chunks = MASTER_CHUNKS
+        self.master.length = MASTER_LENGTH
+        self.master.separator = MASTER_SEPARATOR
 
 
     def ask(self) -> (str, str):
@@ -62,13 +61,12 @@ class Cli:
         """Gets the deterministic password for SERVICE."""
         username, password = self.ask()
 
-        master = self.getMaster()
-        master.add(service)
-        master.save()
+        self.master.add(service)
+        self.master.save()
 
-        master.username = username
-        master.password = password
-        random = master.generate(service, counter)
+        self.master.username = username
+        self.master.password = password
+        random = self.master.generate(service, counter)
         print(random)
 
     @Logger.trace()
@@ -77,21 +75,19 @@ class Cli:
         username, password = self.ask()
         service = input("Enter your service name: ")
 
-        master = self.getMaster()
-        master.add(service)
-        master.save()
+        self.master.add(service)
+        self.master.save()
 
-        master.username = username
-        master.password = password
-        random = master.generate(service)
+        self.master.username = username
+        self.master.password = password
+        random = self.master.generate(service)
         print(random)
 
     @Logger.trace()
     def ls(self):
         """Lists all stored services."""
-        master = self.getMaster()
-        master.load()
-        for service in master.services:
+        self.master.load()
+        for service in self.master.services:
             print(service)
 
 
@@ -104,9 +100,8 @@ class Cli:
     @Logger.trace()
     def remove(self, service: str):
         """Removes SERVICE from the stored list."""
-        master = self.getMaster()
-        master.remove(service)
-        master.save()
+        self.master.remove(service)
+        self.master.save()
 
 
 def main():
