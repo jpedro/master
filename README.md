@@ -4,19 +4,24 @@
 
 Generates deterministic passwords
 
-Inspired by [spectre.app](https://spectre.app/) but simpler.
 
-
-![Pictutre](https://raw.githubusercontent.com/jpedro/master/master/docs/strong.jpg)
+<!-- ![Pictutre](https://raw.githubusercontent.com/jpedro/master/master/docs/strong.jpg) -->
 <!-- ![Strong password](https://raw.githubusercontent.com/jpedro/master/master/docs/blink.gif) -->
 
+This is inspired by [spectre.app](https://spectre.app/) but simpler.
 This uses a sha256 hashed combination of `username + password + service`
 to generate the same password, thus eliminating the need to store,
 maintain and back up other generated passwords.
 
+[jpedro.github.io/master](https://jpedro.github.io/master/) has the
+browser experience.
+
 The used service name list is kept under the file
 `~/.config/master/list.txt` (or whatever `MASTER_LIST` points to)
 *purely for autocompletion*, which will be added later.
+
+Eventually, the idea is to create a simple browser extension that uses
+the URL domain name as the service.
 
 
 ## Install
@@ -57,11 +62,10 @@ USAGE
 | `MASTER_LENGTH`     | `6`                           |
 | `MASTER_CHUNKS`     | `6`                           |
 
-**Note [1]:** If you don't set the `MASTER_USERNAME` or the
-`MASTER_PASSWORD` you will be prompted for them.
+Using these default settings, it will generate a password that's 41
+characters long. 6 chunks of 6 character long with 5 separators in
+between.
 
-
-## Online
-
-[jpedro.github.io/master](https://jpedro.github.io/master/) has the
-browser experience.
+> *Note*
+> [1] If you don't set the `MASTER_USERNAME` or the `MASTER_PASSWORD` you
+> will be prompted for them.

@@ -32,6 +32,14 @@ MASTER_CHUNKS    = int(os.environ.get("MASTER_CHUNKS", "6"))
 
 class Cli:
 
+    def getMaster(self) -> Master:
+        master = Master(MASTER_LIST)
+        master.chunks = MASTER_CHUNKS
+        master.length = MASTER_LENGTH
+        master.separator = MASTER_SEPARATOR
+        return master
+
+
     def ask(self) -> (str, str):
         if len(MASTER_USERNAME) > 0:
             username = MASTER_USERNAME
@@ -54,7 +62,7 @@ class Cli:
         """Gets the deterministic password for SERVICE."""
         username, password = self.ask()
 
-        master = Master(MASTER_LIST)
+        master = self.getMaster()
         master.add(service)
         master.save()
 
@@ -69,7 +77,7 @@ class Cli:
         username, password = self.ask()
         service = input("Enter your service name: ")
 
-        master = Master(MASTER_LIST)
+        master = self.getMaster()
         master.add(service)
         master.save()
 
@@ -81,7 +89,7 @@ class Cli:
     @Logger.trace()
     def ls(self):
         """Lists all stored services."""
-        master = Master(MASTER_LIST)
+        master = self.getMaster()
         master.load()
         for service in master.services:
             print(service)
@@ -96,7 +104,7 @@ class Cli:
     @Logger.trace()
     def remove(self, service: str):
         """Removes SERVICE from the stored list."""
-        master = Master(MASTER_LIST)
+        master = self.getMaster()
         master.remove(service)
         master.save()
 
