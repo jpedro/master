@@ -5,7 +5,7 @@
 <!-- ![Pictutre](https://raw.githubusercontent.com/jpedro/master/master/.github/assets/password.jpg) -->
 <!-- ![Strong password](https://raw.githubusercontent.com/jpedro/master/master/.github/assets/giphy.gif) -->
 
-Deterministic password generator.
+Generates deterministic passwords
 
 Inspired by [spectre.app](https://spectre.app/) but simpler.
 

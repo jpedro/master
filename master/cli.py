@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
 NAME
-    master -- Generates deterministic passwords for services
+    master -- Deterministic password generator.
 
 USAGE
+    master                      With no arguments, prompt for service NAME
     master NAME                 Gets the password for service NAME
     master -l, --list           Lists all stored services
     master -r, --remove NAME    Removes service NAME from the stored list
