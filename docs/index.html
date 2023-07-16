@@ -1,15 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html data-theme="light">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Master password</title>
 <link rel="shortcut icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔐</text></svg>">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.*/css/pico.min.css">
 <style>
 body {
     max-width: 800px;
     margin: 40px auto;
+}
+form {
+    margin: 0;
+    padding: 0;
 }
 input {
     padding: 5px;
@@ -20,15 +24,18 @@ input {
     border: 1px solid #aaa;
 }
 #tips {
+    margin: 20px 0;
     padding: 5px;
     font-size: 1.2em;
 }
 code {
+    margin: 0 5px;
+    padding: 5px 10px;
     background: #ddd;
-    padding: 3px 5px;
+    color: #000;
     border-radius: 3px;
 }
-#hashed {
+#result {
     background: #f7dc6f;
     --background: #fad7a0;
     padding: 20px;
@@ -42,28 +49,28 @@ code {
     transition: background-color 0.05s ease;
     color: #000;
 }
-#hashed.new {
+#result.new {
     background: #f1c40f;
 }
-#hashed.visible {
-    background: #d35400;
-    color: #fff;
+#result.visible {
+    --background: #d35400;
+    --color: #fff;
 }
 </style>
 </head>
-<body>
+<body data-theme="light">
 <h1>Master password</h1>
 <form onsubmit="generate(); return false;">
     <input
         type="password" id="username"
         placeholder="Master username" required
-        autocomplete="off" value="pedro" /><br />
+        autocomplete="off" value="" /><br />
     <input
         type="password" id="password"
         placeholder="Master password" required
         autocomplete="off" /><br />
     <input
-        type="text" name="value" id="value"
+        type="password" name="value" id="service"
         placeholder="Service name" required
         autocomplete="off" autofocus />
 </form>
@@ -71,26 +78,34 @@ code {
     Press <code>enter</code> to copy the password
     and <code>alt</code> to reveal it.
 </div>
-<pre id="hashed"></pre>
+<pre id="result"></pre>
+
 <script>
 const sha256 = async (message) => {
     const encoder = new TextEncoder();
     const data = encoder.encode(message);
     const buffer = await crypto.subtle.digest("SHA-256", data);
     const bytes = Array.from(new Uint8Array(buffer));
-    console.log("bytes  ", bytes);
-    console.log("btoa   ", btoa(bytes));
-    console.log("atob   ", btoa(buffer));
-    const hex = bytes
-        .map(b => b.toString(16).padStart(2, "0"))
-        .join("");
-    return hex;
+    // console.log("Data           ", data);
+    // console.log("Buffer         ", buffer);
+    // console.log("Bytes          ", bytes);
+    // console.log("Encoded?       ", btoa(bytes));
+    // console.log("Decoded?       ", buffer);
+    // console.log("Hex", hex);
+    // console.log("Raw", raw);
+    // console.log("+++", btoa(raw));
+    // const hex = bytes
+    //     .map(b => b.toString(16).padStart(2, "0"))
+    //     .join("");
+
+    const raw = String.fromCharCode.apply(String, bytes);
+    return raw;
 };
 
 const username = document.getElementById("username");
 const password = document.getElementById("password");
-const value    = document.getElementById("value");
-const hashed   = document.getElementById("hashed");
+const service  = document.getElementById("service");
+const result   = document.getElementById("result");
 
 let visible  = false;
 
@@ -113,76 +128,89 @@ const isKeyboardEmpty = (ev) => {
     )
 }
 
+// const onKeyPress = (ev) => {
 const onKeyUp = (ev) => {
-    // if (ev.keyCode === 18 && ev.charCode === 0 && ev.metaKey === false && ev.shiftKey === false && ev.ctrlKey === false) {
     if (ev.keyCode === 18 && isKeyboardEmpty(ev)) {
-        console.log("ev.altKey", ev.altKey);
         return toggle(false);
+    }
+
+    if (ev.keyCode === 13 && isKeyboardEmpty(ev)) {
+        copy();
+        return;
+    }
+
+    if (!isKeyboardEmpty(ev)) {
+        return;
+    }
+
+    if (ev.target.id === "service") {
+        generate();
+        return;
     }
 };
 
-const onKeyDown = (ev) => {
-    console.log("ev.keyCode", ev.keyCode);
-    // console.log("ev", ev);
-    // if (ev.keyCode === 27 && ev.charCode === 0 && ev.metaKey === false && ev.shiftKey === false && ev.ctrlKey === false) {
-    // Escape
-    if (ev.keyCode === 27 && isKeyboardEmpty(ev)) {
-        return hide();
+const copy = () => {
+    const generated = result.getAttribute("data-generated");
+    navigator.clipboard.writeText(generated);
+    result.innerText = "Password copied to clipboard";
+    result.classList.add("new");
+    setTimeout(() => {
+        result.classList.remove("new");
+        result.innerText = result.getAttribute("data-redacted");
+    }, 2000);
+}
+
+const setValue = (value) => {
+    if (value === "") {
+        result.setAttribute("data-redacted", value);
+        result.setAttribute("data-generated", value);
+        result.innerText = value;
+    } else {
+        const redacted = value.slice(0, 3) + "***-******-******-******-******-***" + value.slice(-3);
+        result.setAttribute("data-redacted", redacted);
+        result.setAttribute("data-generated", value);
+        result.innerText = redacted;
     }
-    // if (ev.keyCode === 18 && ev.charCode === 0 && ev.metaKey === false && ev.shiftKey === false && ev.ctrlKey === false) {
+}
+
+const onKeyDown = (ev) => {
     if (ev.keyCode === 18 && isKeyboardEmpty(ev)) {
-        console.log("ev.altKey", ev.altKey);
         return toggle(true);
     }
-    // if (ev.keyCode !== 13) {
-    //     return console.log("onKeyPress: ev.keyCode", ev.keyCode);
-    // }
-    generate();
 };
 
 const generate = () => {
-    save();
-    const source = [username.value, password.value, value.value, 0].join(":");
-    sha256(source)
-        .then(hex => {
-            console.log("source ", source);
-            console.log("hex    ", hex);
-            const encoded = btoa(hex);
-            console.log("encoded", encoded);
-            const regex = /[^0-9A-Za-z]/g;
-            const replaced = encoded.replace(regex, "");
-            console.log("replaced", replaced);
-            const chunks = 6;
-            const length = 6;
-            let parts = [];
-            for (let i = 0; i < chunks; i++) {
-                parts.push(replaced.slice(i * length, (i + 1) * length));
-            }
-            console.log("parts", parts);
-            const generated = parts.join("-");
-            console.log("generated", generated);
-            hashed.setAttribute("data-generated", generated);
-            navigator.clipboard.writeText(generated);
-            // hashed.innerText = "Password copied to clipboard";
-            hashed.innerText = generated;
-            hashed.style.display = "block";
-            hashed.classList.add("new");
-            // setTimeout(() => {
-            //     hashed.classList.remove("new");
-            // }, 200);
-        })
-        .catch(err => {
-            console.error("err", err);
-        })
-    ;
-};
+    if (service.value === "") {
+        setValue("");
+        return;
+    }
 
-const hide = () => {
-    hashed.style.display =
-        hashed.style.display === "block"
-        ? "none"
-        : "block";
-}
+    save();
+    const source = [username.value, password.value, service.value, 0].join(":");
+    sha256(source).then(raw => {
+        // console.log("Source   ", source);
+        // console.log("Raw      ", raw);
+        // console.log("Encoded  ", encoded);
+        // console.log("Replaced ", replaced);
+        // console.log("Parts    ", parts);
+        // console.log("Generated", generated);
+
+        const encoded = btoa(raw);
+        const regex = /[^0-9A-Za-z]/g;
+        const replaced = encoded.replace(regex, "");
+        const chunks = 6;
+        const length = 6;
+        let parts = [];
+        for (let i = 0; i < chunks; i++) {
+            parts.push(replaced.slice(i * length, (i + 1) * length));
+        }
+        const generated = parts.join("-");
+        setValue(generated);
+    })
+    .catch(err => {
+        console.error("err", err);
+    });
+};
 
 const toggle = (state) => {
     if (state !== undefined) {
@@ -190,14 +218,13 @@ const toggle = (state) => {
     }
 
     if (visible) {
-        hashed.innerText = hashed.getAttribute("data-generated");
-        hashed.classList.add("visible");
+        result.innerText = result.getAttribute("data-generated");
+        result.classList.add("visible");
     } else {
-        hashed.innerText = "Password copied to clipboard";
-        hashed.classList.remove("visible");
+        result.innerText = result.getAttribute("data-redacted");
+        result.classList.remove("visible");
     }
     visible = !visible;
-    // console.log("visible", visible);
 };
 
 document.onkeydown = onKeyDown;
