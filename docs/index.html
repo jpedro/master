@@ -164,9 +164,9 @@ const setValue = (value) => {
     if (value === "") {
         result.setAttribute("data-redacted", value);
         result.setAttribute("data-generated", value);
-        result.innerText = value;
+        result.innerText = "(Empty service name)";
     } else {
-        const redacted = value.slice(0, 3) + "***-******-******-******-******-***" + value.slice(-3);
+        const redacted = value.slice(0, 2) + "****-******-******-******-******-****" + value.slice(-2);
         result.setAttribute("data-redacted", redacted);
         result.setAttribute("data-generated", value);
         result.innerText = redacted;
