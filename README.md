@@ -2,8 +2,8 @@
 
 [![Deploy pages](https://github.com/jpedro/master/actions/workflows/pages.yaml/badge.svg)](https://github.com/jpedro/master/actions/workflows/pages.yaml)
 
-<!-- ![Pictutre](https://raw.githubusercontent.com/jpedro/master/master/.github/assets/password.jpg) -->
-<!-- ![Strong password](https://raw.githubusercontent.com/jpedro/master/master/.github/assets/giphy.gif) -->
+![Pictutre](https://raw.githubusercontent.com/jpedro/master/master/docs/strong.jpg)
+<!-- ![Strong password](https://raw.githubusercontent.com/jpedro/master/master/docs/blink.gif) -->
 
 Generates deterministic passwords
 
