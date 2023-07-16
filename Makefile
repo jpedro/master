@@ -16,7 +16,7 @@ clean: ### Removes temporary files
 
 .PHONY: build
 build: clean ### Builds the package locally
-	python3 setup.py sdist bdist_wheel
+	python3 setup.py sdist # dist_wheel
 
 
 .PHONY: test
