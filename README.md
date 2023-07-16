@@ -1,9 +1,11 @@
 # Master
 
+[![Deploy pages](https://github.com/jpedro/master/actions/workflows/pages.yaml/badge.svg)](https://github.com/jpedro/master/actions/workflows/pages.yaml)
+
 <!-- ![Pictutre](https://raw.githubusercontent.com/jpedro/master/master/.github/assets/password.jpg) -->
 <!-- ![Strong password](https://raw.githubusercontent.com/jpedro/master/master/.github/assets/giphy.gif) -->
 
-Deterministic passwords for everyone.
+Deterministic password generator.
 
 Inspired by [spectre.app](https://spectre.app/) but simpler.
 
@@ -58,8 +60,7 @@ USAGE
 `MASTER_PASSWORD` you will be prompted for them.
 
 
-## Browser
+## Online
 
-I'm trying to get the same experience in the browser at
-[jpedro.github.io/master](https://jpedro.github.io/master/) and one sunny
-day it wilk work.
+[jpedro.github.io/master](https://jpedro.github.io/master/) has the
+browser experience.
