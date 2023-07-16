@@ -16,14 +16,16 @@ clean: ### Removes temporary files
 
 .PHONY: build
 build: clean ### Builds the package locally
-	python3 setup.py sdist # dist_wheel
+	# python3 setup.py sdist # dist_wheel
+	python3 -m pip install --upgrade build
+	python3 -m build
 
 
 .PHONY: test
 test: build ### Tests the package locally
 	# pytest
 	pip install -r requirements.txt
-	master version
+	master --version
 	python3 -m twine upload --repository testpypi dist/*
 
 
