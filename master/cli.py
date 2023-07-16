@@ -32,7 +32,7 @@ MASTER_CHUNKS    = int(os.environ.get("MASTER_CHUNKS", "6"))
 
 class Cli:
 
-    def init(self):
+    def __init__(self):
         self.master = Master(MASTER_LIST)
         self.master.chunks = MASTER_CHUNKS
         self.master.length = MASTER_LENGTH
