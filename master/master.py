@@ -26,7 +26,7 @@ class Master:
 
         self.services = set()
         if not os.path.isfile(self.path):
-            Logger.warn(f"File {self.path} doesn't exit.")
+            # Logger.warn(f"File {self.path} doesn't exit.")
             return 0
 
         with open(self.path, "r") as f:
