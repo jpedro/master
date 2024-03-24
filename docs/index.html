@@ -79,6 +79,15 @@ button {
     width: fit-content;
     padding: 0.1rem 0.5rem;
 }
+span.format {
+    background-color: #ddd;
+    border-radius: 8px;
+    padding: 5px 12px;
+}
+span.format.selected {
+    background-color: #080;
+    color: #fff;
+}
 </style>
 </head>
 <body data-theme="light">
@@ -110,7 +119,11 @@ button {
         autocomplete="off" autofocus />
     <div id="tips">
         Press <button id="copy">Enter</button> to copy the password<br />
-        Press <button id="format">Alt</button> to chnage the format<br />
+        Press <button id="format">Alt</button> to change the format &nbsp;
+        <span class="format" id="normal">Normal</span>
+        <span class="format" id="redacted">Redacted</span>
+        <span class="format" id="simple">Simple</span>
+        <br />
     </div>
     <pre id="result"></pre>
 </form>
@@ -125,6 +138,9 @@ const $result   = document.getElementById("result");
 const $format   = document.getElementById("format");
 const $copy     = document.getElementById("copy");
 const $reset    = document.getElementById("reset");
+// const $normal   = document.getElementById("normal");
+// const $simple   = document.getElementById("simple");
+// const $redacted = document.getElementById("redacted");
 
 const EMPTY_VALUE = "(Fill in the service)";
 
@@ -133,7 +149,7 @@ let format = "normal";
 const formats = {
     "normal":   EMPTY_VALUE,
     "simple":   EMPTY_VALUE,
-    "redact":   EMPTY_VALUE,
+    "redacted": EMPTY_VALUE,
 };
 $result.innerText = EMPTY_VALUE;
 
@@ -142,6 +158,17 @@ const resetCreds = () => {
     $password.value = "";
     saveCreds();
 }
+
+const selectFormat = () => {
+    const spans = document.getElementsByClassName("format");
+    for (let i = 0; i < spans.length; i++) {
+        const span = spans[i];
+        span.classList.remove("selected");
+    }
+
+    const selected = document.getElementById(format);
+    selected.classList.add("selected");
+};
 
 const saveCreds = () => {
     const username = $username.value;
@@ -188,7 +215,8 @@ const loadCreds = () => {
     const username = localStorage.getItem("username") || "";
     const password = localStorage.getItem("password") || "";
 
-    format = localStorage.getItem("format") || "redact";
+    format = localStorage.getItem("format") || "redacted";
+    selectFormat();
 
     $username.value = username;
     $password.value = password;
@@ -238,7 +266,7 @@ const copyPassword = () => {
     case "simple":
         value = formats[format];
         break;
-    case "redact":
+    case "redacted":
         value = formats["normal"];
         break;
     }
@@ -258,7 +286,7 @@ const setValue = (value) => {
     if (value.length < 1) {
         formats["normal"] = EMPTY_VALUE;
         formats["simple"] = EMPTY_VALUE;
-        formats["redact"] = EMPTY_VALUE;
+        formats["redacted"] = EMPTY_VALUE;
     } else {
         const chunks = 6;
         const length = 6;
@@ -277,7 +305,7 @@ const setValue = (value) => {
 
         formats["normal"] = normal;
         formats["simple"] = simple;
-        formats["redact"] = redact;
+        formats["redacted"] = redact;
     }
 
     result.innerText = formats[format];
@@ -316,9 +344,9 @@ const generate = () => {
 const toggleFormat = (state) => {
     switch (format) {
     case "normal":
-        format = "redact";
+        format = "redacted";
         break;
-    case "redact":
+    case "redacted":
         format = "simple";
         break;
     case "simple":
@@ -326,6 +354,7 @@ const toggleFormat = (state) => {
         break;
     }
 
+    selectFormat();
     localStorage.setItem("format", format);
     result.innerText = formats[format];
 };
