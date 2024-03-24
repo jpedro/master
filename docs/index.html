@@ -95,15 +95,15 @@ span.format.selected {
 <a href="#reset" id="reset">Reset user</a>
 <form id="creds" onsubmit="saveCreds(); return false;">
     <input
-        type="text"
         id="username"
+        type="text"
         placeholder="Master username"
         required
         autocomplete="off"
         autofocus /><br />
     <input
-        type="password"
         id="password"
+        type="password"
         placeholder="Master password"
         required
         autocomplete="off" /><br />
@@ -114,9 +114,14 @@ span.format.selected {
 <!-- <div id="details"> -->
 <form id="details" onsubmit="return false">
     <input
-        type="text" name="value" id="service"
-        placeholder="Service name" required
-        autocomplete="off" autofocus />
+        id="service"
+        type="text"
+        name="value"
+        placeholder="Service name"
+        spellcheck="false"
+        required
+        autocomplete="off"
+        autofocus />
     <div id="tips">
         Press <button id="copy">Enter</button> to copy the password<br />
         Press <button id="format">Alt</button> to change the format &nbsp;
