@@ -92,8 +92,8 @@ span.format.selected {
 </head>
 <body data-theme="light">
 <h1>Master Password</h1>
-<a href="#reset" id="reset">Reset user</a>
-<form id="creds" onsubmit="saveCreds">
+<a href="#reset" id="reset">Reset credentials</a>
+<form id="creds">
     <input
         id="username"
         type="text"
@@ -111,7 +111,7 @@ span.format.selected {
         type="submit"
         value="Save" /><br />
 </form>
-<!-- <div id="details"> -->
+
 <form id="details" onsubmit="return false">
     <input
         id="service"
@@ -175,10 +175,7 @@ const selectFormat = () => {
     selected.classList.add("selected");
 };
 
-const saveCreds = (ev) => {
-    ev.stopPropagation();
-    ev.preventDefault();
-
+const saveCreds = () => {
     const username = $username.value;
     const password = $password.value;
 
@@ -279,6 +276,8 @@ const copyPassword = () => {
         break;
     }
 
+    $service.select();
+
     navigator.clipboard.writeText(value);
     result.innerText = "Password copied";
     result.classList.add("new");
@@ -366,6 +365,15 @@ const toggleFormat = (state) => {
     localStorage.setItem("format", format);
     result.innerText = formats[format];
 };
+
+$creds.addEventListener("submit", (ev) => {
+    ev.key = "What";
+    console.log("ev", ev);
+    ev.stopPropagation();
+    ev.preventDefault();
+    saveCreds();
+    return false;
+});
 
 $reset.addEventListener("click", (ev) => {
     ev.stopPropagation();
