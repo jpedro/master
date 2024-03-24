@@ -12,6 +12,9 @@ body {
     max-width: 800px;
     margin: 40px auto;
 }
+h1 {
+    margin-bottom: 1rem;
+}
 form {
     margin: 0;
     padding: 0;
@@ -23,6 +26,17 @@ input {
     font-size: 1.2em;
     width: 700px; /* becomes 712px due to padding 2 x 5px + 2 x 1px border*/
     border: 1px solid #aaa;
+}
+#reset {
+    display: none;
+    float: right;
+    position: relative;
+    top: -3rem;
+    height: 0;
+}
+#details {
+    display: none;
+    margin: 0;
 }
 #tips {
     margin: 20px 0;
@@ -60,33 +74,134 @@ code {
     ---color: #fff;
     background: #f1c40f;
 }
+button {
+    display: inline;
+    width: fit-content;
+    padding: 0.1rem 0.5rem;
+}
 </style>
 </head>
 <body data-theme="light">
 <h1>Master Password</h1>
-<form onsubmit="generate(); return false;">
+<a href="#reset" id="reset">Reset user</a>
+<form id="creds" onsubmit="saveCreds(); return false;">
     <input
-        type="text" id="username"
-        placeholder="Master username" required
-        autocomplete="off" value="" /><br />
+        type="text"
+        id="username"
+        placeholder="Master username"
+        required
+        autocomplete="off"
+        autofocus /><br />
     <input
-        type="password" id="password"
-        placeholder="Master password" required
+        type="password"
+        id="password"
+        placeholder="Master password"
+        required
         autocomplete="off" /><br />
+    <input
+        type="submit"
+        value="Save" /><br />
+</form>
+<!-- <div id="details"> -->
+<form id="details" onsubmit="return false">
     <input
         type="text" name="value" id="service"
         placeholder="Service name" required
         autocomplete="off" autofocus />
+    <div id="tips">
+        Press <button id="copy">Enter</button> to copy the password<br />
+        Press <button id="format">Alt</button> to chnage the format<br />
+    </div>
+    <pre id="result"></pre>
 </form>
-<div id="tips">
-    Press <code>enter</code> to copy the password
-    and <code>alt</code> to reveal it.
-</div>
-<pre id="result"></pre>
-
-<a href="https://github.com/jpedro/master" style="position: absolute; top: 0; right: 0;"><img decoding="async" loading="lazy" width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_orange_ff7600.png?resize=149%2C149" class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
 
 <script>
+const $creds    = document.getElementById("creds");
+const $username = document.getElementById("username");
+const $password = document.getElementById("password");
+const $details  = document.getElementById("details");
+const $service  = document.getElementById("service");
+const $result   = document.getElementById("result");
+const $format   = document.getElementById("format");
+const $copy     = document.getElementById("copy");
+const $reset    = document.getElementById("reset");
+
+const EMPTY_VALUE = "(Fill in the service)";
+
+let generated = null;
+let format = "normal";
+const formats = {
+    "normal":   EMPTY_VALUE,
+    "simple":   EMPTY_VALUE,
+    "redact":   EMPTY_VALUE,
+};
+$result.innerText = EMPTY_VALUE;
+
+const resetCreds = () => {
+    $username.value = "";
+    $password.value = "";
+    saveCreds();
+}
+
+const saveCreds = () => {
+    const username = $username.value;
+    const password = $password.value;
+
+    if (username.length > 0 && password.length > 0) {
+        console.log("Saving creds");
+        localStorage.setItem("username", username);
+        localStorage.setItem("password", password);
+        showCreds(false);
+    } else {
+        console.log("Removing creds");
+        localStorage.removeItem("username");
+        localStorage.removeItem("password");
+        showCreds(true);
+    }
+
+    return false;
+};
+
+const showCreds = (value) => {
+    if (value) {
+        console.log("Show creds");
+        $creds.style.display = "block";
+        $reset.style.display = "none";
+        $details.style.display = "none";
+        console.log("$username", $username);
+        $service.blur();
+        $username.focus();
+        $username.select();
+    } else {
+        console.log("Hide creds");
+        $creds.style.display = "none";
+        $reset.style.display = "inline-block";
+        $details.style.display = "block";
+        console.log("$service", $service);
+        $username.blur();
+        $service.focus();
+        $service.select();
+    }
+};
+
+const loadCreds = () => {
+    const username = localStorage.getItem("username") || "";
+    const password = localStorage.getItem("password") || "";
+
+    format = localStorage.getItem("format") || "redact";
+
+    $username.value = username;
+    $password.value = password;
+
+    if (username.length > 0 && password.length > 0) {
+        console.log("We have creds");
+        showCreds(false);
+    } else {
+        console.log("We miss creds");
+        showCreds(true);
+    }
+};
+
 const sha256 = async (message) => {
     const encoder = new TextEncoder();
     const data = encoder.encode(message);
@@ -108,23 +223,6 @@ const sha256 = async (message) => {
     return raw;
 };
 
-const username = document.getElementById("username");
-const password = document.getElementById("password");
-const service  = document.getElementById("service");
-const result   = document.getElementById("result");
-
-let visible  = false;
-
-const save = () => {
-    localStorage.setItem("username", username.value);
-    localStorage.setItem("password", password.value);
-};
-
-const load = () => {
-    username.value = localStorage.getItem("username");
-    password.value = localStorage.getItem("password");
-};
-
 const isKeyboardEmpty = (ev) => {
     return (
         ev.charCode === 0
@@ -134,50 +232,55 @@ const isKeyboardEmpty = (ev) => {
     )
 }
 
-// const onKeyPress = (ev) => {
-const onKeyUp = (ev) => {
-    if (ev.keyCode === 18 && isKeyboardEmpty(ev)) {
-        return toggle(false);
+const copyPassword = () => {
+    switch (format) {
+    case "normal":
+    case "simple":
+        value = formats[format];
+        break;
+    case "redact":
+        value = formats["normal"];
+        break;
     }
 
-    if (ev.keyCode === 13 && isKeyboardEmpty(ev)) {
-        copy();
-        return;
-    }
-
-    if (!isKeyboardEmpty(ev)) {
-        return;
-    }
-
-    console.log("ev", ev);
-    if (ev.target.nodeName === "INPUT") {
-        generate();
-        return;
-    }
-};
-
-const copy = () => {
-    const generated = result.getAttribute("data-generated");
-    navigator.clipboard.writeText(generated);
+    navigator.clipboard.writeText(value);
     result.innerText = "Password copied";
     result.classList.add("new");
     setTimeout(() => {
         result.classList.remove("new");
-        result.innerText = result.getAttribute("data-redacted");
+        result.innerText = formats[format];
     }, 2000);
 }
 
 const setValue = (value) => {
-    if (value === "") {
-        result.setAttribute("data-redacted", value);
-        result.setAttribute("data-generated", value);
-        result.innerText = "(Empty service name)";
+    generated = value;
+
+    if (value.length < 1) {
+        formats["normal"] = EMPTY_VALUE;
+        formats["simple"] = EMPTY_VALUE;
+        formats["redact"] = EMPTY_VALUE;
     } else {
-        const redacted = value.slice(0, 2) + "****-******-******-******-******-****" + value.slice(-2);
-        result.setAttribute("data-redacted", redacted);
-        result.setAttribute("data-generated", value);
-        result.innerText = redacted;
+        const chunks = 6;
+        const length = 6;
+        let parts = [];
+        for (let i = 0; i < chunks; i++) {
+            parts.push(generated.slice(i * length, (i + 1) * length));
+        }
+
+        const normal = parts.join("-");
+        const simple = value.slice(0, 4) +
+            "+" + value.slice(4, 8) +
+            "-" + value.slice(8, 12)
+        const redact = value.slice(0, 2) +
+            "****-******-******-******-******-****" +
+            value.slice(-2);
+
+        formats["normal"] = normal;
+        formats["simple"] = simple;
+        formats["redact"] = redact;
     }
+
+    result.innerText = formats[format];
 }
 
 const onKeyDown = (ev) => {
@@ -192,52 +295,90 @@ const generate = () => {
         return;
     }
 
-    save();
     const source = [username.value, password.value, service.value, 0].join(":");
     sha256(source).then(raw => {
+        const encoded = btoa(raw);
+        const regex = /[^0-9A-Za-z]/g;
+        const clean = encoded.replace(regex, "");
         // console.log("Source   ", source);
         // console.log("Raw      ", raw);
         // console.log("Encoded  ", encoded);
         // console.log("Replaced ", replaced);
         // console.log("Parts    ", parts);
         // console.log("Generated", generated);
-
-        const encoded = btoa(raw);
-        const regex = /[^0-9A-Za-z]/g;
-        const replaced = encoded.replace(regex, "");
-        const chunks = 6;
-        const length = 6;
-        let parts = [];
-        for (let i = 0; i < chunks; i++) {
-            parts.push(replaced.slice(i * length, (i + 1) * length));
-        }
-        const generated = parts.join("-");
-        setValue(generated);
+        setValue(clean);
     })
     .catch(err => {
         console.error("err", err);
     });
 };
 
-const toggle = (state) => {
-    if (state !== undefined) {
-        visible = state;
+const toggleFormat = (state) => {
+    switch (format) {
+    case "normal":
+        format = "redact";
+        break;
+    case "redact":
+        format = "simple";
+        break;
+    case "simple":
+        format = "normal";
+        break;
     }
 
-    if (visible) {
-        result.innerText = result.getAttribute("data-generated");
-        result.classList.add("visible");
-    } else {
-        result.innerText = result.getAttribute("data-redacted");
-        result.classList.remove("visible");
-    }
-    visible = !visible;
+    localStorage.setItem("format", format);
+    result.innerText = formats[format];
 };
 
-document.onkeydown = onKeyDown;
-document.onkeyup = onKeyUp;
+$reset.addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+    resetCreds();
+    return false;
+});
 
-load();
+$format.addEventListener("click", () => {
+    toggleFormat();
+    return false;
+});
+
+$copy.addEventListener("click", () => {
+    copyPassword();
+    return false;
+});
+
+$service.addEventListener("keyup", (ev) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+
+    if (ev.key === "Enter" && isKeyboardEmpty(ev)) {
+        copyPassword();
+        return false;
+    }
+
+    if (ev.key === "Alt" && isKeyboardEmpty(ev)) {
+        toggleFormat();
+        return false;
+    }
+
+    console.log("$service.addEventListener keyup", ev);
+    generate();
+    return false;
+});
+
+document.onkeyup = (ev) => {
+    console.log("document.onkeyup", ev);
+    if (ev.key === "Alt" && isKeyboardEmpty(ev)) {
+        toggleFormat();
+        ev.stopPropagation();
+        ev.preventDefault();
+        return false;
+    }
+
+    console.log("What's this?", ev);
+};
+
+loadCreds();
 </script>
 </body>
 </html>
