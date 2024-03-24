@@ -312,9 +312,9 @@ const setValue = (value) => {
             "****-******-******-******-******-****" +
             value.slice(-2);
 
-        formats["normal"] = normal;
-        formats["simple"] = simple;
-        formats["redacted"] = redact;
+        formats["normal"] = correct(normal);
+        formats["simple"] = correct(simple);
+        formats["redacted"] = correct(redact);
     }
 
     result.innerText = formats[format];
@@ -326,13 +326,106 @@ const onKeyDown = (ev) => {
     }
 };
 
+const correct = (value) => {
+    const CHARS_SYMBOLS = "-+";
+    const CHARS_NUMBERS = "0123456789";
+    const CHARS_LOWERS = "abcdefghijklmnopqrstuvwxyz";
+    const CHARS_UPPERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    let hasSymbol = false;
+    let hasNumber = false;
+    let hasLower  = false;
+    let hasUpper  = false;
+
+    for (let i = 0; i < value.length; i++) {
+        const char = value[i];
+        // console.log("CHAR", char);
+        const isSymbol = CHARS_SYMBOLS.indexOf(char) > -1;
+        const isNumber = CHARS_NUMBERS.indexOf(char) > -1;
+        const isLower  = CHARS_LOWERS.indexOf(char) > -1;
+        const isUpper  = CHARS_UPPERS.indexOf(char) > -1;
+
+        // console.log("    isSymbol", isSymbol);
+        // console.log("    isNumber", isNumber);
+        // console.log("    isLower", isLower);
+        // console.log("    isUpper", isUpper);
+
+        if (hasSymbol === false && isSymbol) {
+            // console.log("    Found symbol", char);
+            hasSymbol = true;
+        }
+        if (hasNumber === false && isNumber) {
+            // console.log("    Found number", char);
+            hasNumber = true;
+        }
+        if (hasLower === false && isLower) {
+            // console.log("    Found lower", char);
+            hasLower = true;
+        }
+        if (hasUpper === false && isUpper) {
+            // console.log("    Found upper", char);
+            hasUpper = true;
+        }
+    }
+
+    // console.log("hasSymbol", hasSymbol);
+    // console.log("hasNumber", hasNumber);
+    // console.log("hasLower",  hasLower);
+    // console.log("hasUpper",  hasUpper);
+
+    if (hasSymbol === false) {
+        // console.log("Fixing symbol");
+        value = replace(value, CHARS_SYMBOLS, -4);
+    }
+
+    if (hasNumber === false) {
+        // console.log("Fixing number");
+        value = replace(value, CHARS_NUMBERS, -3);
+    }
+
+    if (hasLower === false) {
+        // console.log("Fixing lower");
+        value = replace(value, CHARS_LOWERS, -2);
+    }
+
+    if (hasUpper === false) {
+        // console.log("Fixing upper");
+        value = replace(value, CHARS_UPPERS, -1);
+    }
+
+    return value;
+};
+
+const replace = (value, chars, position) => {
+    const index = value.length + position;
+    // console.log("    Replace", value, chars, position, index);
+    const code = value.charCodeAt(index);
+    // console.log("    Code", code);
+    // console.log("    Length", chars.length);
+    // console.log("    Mod", code % chars.length);
+    const rand = Math.floor(code % chars.length);
+    // console.log("    Rand", rand);
+    // console.log("    Replace", chars[rand]);
+
+    return value.substring(0, index) +
+        chars[rand] +
+        value.substring(index + 1);
+};
+
 const generate = () => {
     if (service.value === "") {
         setValue("");
         return;
     }
 
-    const source = [username.value, password.value, service.value, 0].join(":");
+    const source = [
+        username.value.toLowerCase(),
+        // username.value,
+        password.value,
+        service.value.toLowerCase(),
+        // service.value,
+        0,
+    ].join(":");
     sha256(source).then(raw => {
         const encoded = btoa(raw);
         const regex = /[^0-9A-Za-z]/g;
