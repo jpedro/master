@@ -93,7 +93,7 @@ span.format.selected {
 <body data-theme="light">
 <h1>Master Password</h1>
 <a href="#reset" id="reset">Reset user</a>
-<form id="creds" onsubmit="saveCreds(); return false;">
+<form id="creds" onsubmit="saveCreds">
     <input
         id="username"
         type="text"
@@ -175,7 +175,10 @@ const selectFormat = () => {
     selected.classList.add("selected");
 };
 
-const saveCreds = () => {
+const saveCreds = (ev) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+
     const username = $username.value;
     const password = $password.value;
 
