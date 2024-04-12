@@ -63,6 +63,7 @@ code {
     height: 2.5em;
     transition: background-color 0.05s ease;
     color: #000;
+    user-select: all;
 }
 #result.new {
     --background: #f1c40f;
@@ -97,15 +98,17 @@ span.format.selected {
 <a href="#reset" id="reset">Reset</a>
 <form id="creds">
     <input
-        id="username"
         type="text"
+        id="username"
+        name="username"
         placeholder="Master username"
         required
         autocomplete="off"
         autofocus /><br />
     <input
-        id="password"
         type="password"
+        name="password"
+        id="password"
         placeholder="Master password"
         required
         autocomplete="off" /><br />
@@ -116,9 +119,9 @@ span.format.selected {
 
 <form id="details" onsubmit="return false">
     <input
-        id="service"
         type="text"
         name="value"
+        id="service"
         placeholder="Service name"
         spellcheck="false"
         required
@@ -149,16 +152,16 @@ const $reset    = document.getElementById("reset");
 // const $simple   = document.getElementById("simple");
 // const $redacted = document.getElementById("redacted");
 
-const EMPTY_VALUE = "(Fill in the service)";
+const EMPTY_SERVICE = "(Fill in the service)";
 
 let generated = null;
 let format = "normal";
 const formats = {
-    "normal":   EMPTY_VALUE,
-    "simple":   EMPTY_VALUE,
-    "redacted": EMPTY_VALUE,
+    "normal":   EMPTY_SERVICE,
+    "simple":   EMPTY_SERVICE,
+    "redacted": EMPTY_SERVICE,
 };
-$result.innerText = EMPTY_VALUE;
+$result.innerText = EMPTY_SERVICE;
 
 const resetCreds = () => {
     $username.value = "";
@@ -202,7 +205,7 @@ const showCreds = (value) => {
         $creds.style.display = "block";
         $reset.style.display = "none";
         $details.style.display = "none";
-        console.log("$username", $username);
+        // console.log("$username", $username);
         $service.blur();
         $username.focus();
         $username.select();
@@ -211,7 +214,7 @@ const showCreds = (value) => {
         $creds.style.display = "none";
         $reset.style.display = "inline-block";
         $details.style.display = "block";
-        console.log("$service", $service);
+        // console.log("$service", $service);
         $username.blur();
         $service.focus();
         $service.select();
@@ -279,6 +282,10 @@ const copyPassword = () => {
     }
 
     $service.select();
+    // console.log("value", value);
+    if (value === EMPTY_SERVICE) {
+        return false;
+    }
 
     navigator.clipboard.writeText(value);
     result.innerText = "Password copied";
@@ -293,9 +300,9 @@ const setValue = (value) => {
     generated = value;
 
     if (value.length < 1) {
-        formats["normal"] = EMPTY_VALUE;
-        formats["simple"] = EMPTY_VALUE;
-        formats["redacted"] = EMPTY_VALUE;
+        formats["normal"] = EMPTY_SERVICE;
+        formats["simple"] = EMPTY_SERVICE;
+        formats["redacted"] = EMPTY_SERVICE;
     } else {
         const chunks = 6;
         const length = 6;
@@ -461,13 +468,33 @@ const toggleFormat = (state) => {
     result.innerText = formats[format];
 };
 
-$creds.addEventListener("submit", (ev) => {
-    ev.key = "What";
-    console.log("ev", ev);
+const enterCreds = (ev) => {
     ev.stopPropagation();
     ev.preventDefault();
+    console.log("enterCreds", ev);
+    ev.key = "What";
     saveCreds();
     return false;
+};
+
+$creds.addEventListener("submit", (ev) => {
+    return enterCreds(ev);
+});
+
+$username.addEventListener("keydown", (ev) => {
+    console.log(ev);
+    if (ev.code === "Enter") {
+        console.log("USERNAME ENTER")
+        return enterCreds(ev);
+    }
+});
+
+$password.addEventListener("keydown", (ev) => {
+    console.log(ev);
+    if (ev.code === "Enter") {
+        console.log("PASSWORD ENTER")
+        return enterCreds(ev);
+    }
 });
 
 $reset.addEventListener("click", (ev) => {
@@ -501,7 +528,7 @@ $service.addEventListener("keyup", (ev) => {
         return false;
     }
 
-    console.log("$service.addEventListener keyup", ev);
+    // console.log("$service.addEventListener keyup", ev);
     generate();
     return false;
 });
@@ -515,7 +542,7 @@ document.onkeyup = (ev) => {
         return false;
     }
 
-    console.log("What's this?", ev);
+    // console.log("What's this?", ev);
 };
 
 loadCreds();

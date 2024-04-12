@@ -32,3 +32,13 @@ test: build ### Tests the package locally
 .PHONY: release
 release: build ### Deploys the package to pypi
 	python3 -m twine upload dist/*
+
+
+.PHONY: local
+local: ### Does something
+	docker run \
+		--rm \
+		--name master \
+		--volume ./docs/:/var/www/html \
+		--publish 8080:80 \
+		php:7.3-apache
