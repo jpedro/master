@@ -268,7 +268,7 @@ const isKeyboardEmpty = (ev) => {
         && ev.shiftKey === false
         && ev.ctrlKey === false
     )
-}
+};
 
 const copyPassword = () => {
     switch (format) {
@@ -294,7 +294,7 @@ const copyPassword = () => {
         result.classList.remove("new");
         result.innerText = formats[format];
     }, 2000);
-}
+};
 
 const setValue = (value) => {
     generated = value;
@@ -325,7 +325,7 @@ const setValue = (value) => {
     }
 
     result.innerText = formats[format];
-}
+};
 
 const onKeyDown = (ev) => {
     if (ev.keyCode === 18 && isKeyboardEmpty(ev)) {
