@@ -26,7 +26,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "master=master.cli:main",
+            "master=master.pass:main",
         ],
     },
 )
