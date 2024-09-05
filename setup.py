@@ -2,7 +2,7 @@ from setuptools import setup
 from master import VERSION
 
 setup(
-    name="masterpass",
+    name="master",
     version=VERSION,
     description="Deterministic password generator",
     long_description=open("README.md", "r").read(),
@@ -26,7 +26,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "master=master.pass:main",
+            "master=master.cli:main",
         ],
     },
 )

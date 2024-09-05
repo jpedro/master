@@ -1,6 +1,7 @@
 .PHONY: help
 help: ### Shows this help
-	@grep -E '^[0-9a-zA-Z_-]+:' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?### "}; {printf "\033[32;1m%-16s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[0-9a-zA-Z_-]+:' $(MAKEFILE_LIST) \
+	| awk 'BEGIN {FS = ":.*?### "}; {printf "\033[32;1m%-16s\033[0m %s\n", $$1, $$2}'
 
 
 .PHONY: all
@@ -32,13 +33,3 @@ test: build ### Tests the package locally
 .PHONY: release
 release: build ### Deploys the package to pypi
 	python3 -m twine upload dist/*
-
-
-.PHONY: local
-local: ### Does something
-	docker run \
-		--rm \
-		--name master \
-		--volume ./docs/:/var/www/html \
-		--publish 8080:80 \
-		php:7.3-apache
