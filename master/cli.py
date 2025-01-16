@@ -14,11 +14,9 @@ USAGE
 import os
 import sys
 import getpass
+import logging
 
-from . import VERSION
-from .master import Master
-from .logger import Logger
-
+VERSION = "0.2.4"
 
 USER_HOME        = os.path.expanduser("~")
 MASTER_LIST      = f"{USER_HOME}/.config/master/list.txt"
@@ -29,6 +27,174 @@ MASTER_PASSWORD  = os.environ.get("MASTER_PASSWORD", "")
 MASTER_SEPARATOR = os.environ.get("MASTER_SEPARATOR", "-")
 MASTER_LENGTH    = int(os.environ.get("MASTER_LENGTH", "6"))
 MASTER_CHUNKS    = int(os.environ.get("MASTER_CHUNKS", "6"))
+
+
+import os
+import sys
+import hashlib
+import base64
+import re
+import subprocess
+import shutil # import which
+
+
+class Clipboard:
+
+    @classmethod
+    def copy(cls, text: str):
+        if cls.__exists("pbcopy"):
+            return cls.__pbcopy(text)
+
+        if cls.__exists("xsel"):
+            return cls.__xsel(text)
+
+        return cls.__xclip(text)
+
+
+    @classmethod
+    def __exists(cls, file):
+        return bool(shutil.which(file))
+
+
+    @classmethod
+    def __pbcopy(cls, text):
+        proc = subprocess.Popen(
+            ['pbcopy', 'w'],
+            stdin=subprocess.PIPE,
+            close_fds=True,
+        )
+        proc.communicate(input=text.encode("utf-8"))
+
+
+    @classmethod
+    def __xclip(cls, text):
+        proc = subprocess.Popen(
+            ['xclip', '-selection', 'c'],
+            stdin=subprocess.PIPE,
+            close_fds=True
+        )
+        proc.communicate(input=text.encode("utf-8"))
+
+
+    @classmethod
+    def __xsel(cls, text):
+        proc = subprocess.Popen(
+            ['xsel', '-b', '-i'],
+            stdin=subprocess.PIPE,
+            close_fds=True
+        )
+        proc.communicate(input=text.encode("utf-8"))
+
+
+class Master:
+
+    def __init__(self, path: str):
+        self.path = path
+        self.separator = "-"
+        self.length = 6
+        self.chunks = 6
+
+        self.services = None
+        self.username = None
+        self.password = None
+
+
+    def load(self) -> int:
+        if not self.services is None:
+            return len(self.services)
+
+        self.services = set()
+        if not os.path.isfile(self.path):
+            # Logger.warn(f"File {self.path} doesn't exit.")
+            return 0
+
+        with open(self.path, "r") as f:
+            for line in f.readlines():
+                self.services.add(line.strip())
+
+        Logger.debug(f"Loaded file {self.path}")
+        return len(self.services)
+
+
+    def add(self, service: str):
+        self.load()
+        return self.services.add(service)
+
+
+    def remove(self, service: str):
+        self.load()
+        return self.services.discard(service)
+
+
+    def save(self) -> bool:
+        dirName = os.path.dirname(self.path)
+        os.makedirs(dirName, exist_ok=True)
+
+        with open(self.path, "w") as f:
+            f.write("\n".join(self.services))
+        Logger.debug(f"Wrote file {self.path}")
+
+
+    def generate(self, service: str, counter: int = 0) -> str:
+        source = f"{self.username}:{self.password}:{service}:{counter}"
+        Logger.debug(f"Source:   {source}")
+        hashed = hashlib.sha256()
+        hashed.update(bytes(source, "utf8"))
+        digest = hashed.digest()
+        Logger.debug(f"Digest:   {digest} ({type(digest)} {len(digest)})")
+        Logger.debug(f"Hex:      {digest.hex()}")
+        encoded = base64.b64encode(digest).decode()
+        Logger.debug(f"Encoded:  {encoded} ({type(encoded)})")
+
+        cleaned = re.sub(r"[^0-9A-Za-z]", "", encoded)
+        parts = []
+        for i in range(self.chunks):
+            start = i * self.length
+            stop = (i + 1) * self.length
+            parts.append(cleaned[start:stop])
+        Logger.debug(f"Parts: {parts}")
+        password = self.separator.join(parts)
+        Logger.debug(f"Password: {password}")
+        return password
+
+
+import os
+import sys
+import logging
+
+
+class Logger:
+
+    envDebug = bool(os.environ.get("MASTER_DEBUG"))
+    # print(f"--> envDebug: {envDebug}")
+
+    @classmethod
+    def trace(cls, *dargs, **dkwargs):
+        cls.debug(f"Decor args: {dargs}")
+        cls.debug(f"Decor kwargs: {dkwargs}")
+        def inner(func):
+            cls.debug(f"Running func: {func}")
+            def wrap(*args,**kwargs):
+                cls.debug(f"Function args: {args}")
+                cls.debug(f"Function kwargs: {kwargs}")
+                result = func(*args, **kwargs)
+                cls.debug(f"Function result: {result}")
+
+                return result
+            return wrap
+        return inner
+
+
+    @classmethod
+    def debug(cls, text: str):
+        if not cls.envDebug: return
+        print(f"\033[38;5;242m==> {text}\033[0m", file=sys.stderr)
+
+
+    @classmethod
+    def warn(cls, text: str):
+        print(f"\033[33;1m==> {text}\033[0m", file=sys.stderr)
+
 
 class Cli:
 
@@ -67,7 +233,9 @@ class Cli:
         self.master.username = username
         self.master.password = password
         random = self.master.generate(service, counter)
-        print(random)
+        Clipboard.copy(random)
+        print(f"Password for \033[32;1m{service}\033[0m was copied.")
+
 
     @Logger.trace()
     def start(self):
