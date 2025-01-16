@@ -1,5 +1,5 @@
 from setuptools import setup
-from master import VERSION
+from master.cli import VERSION
 
 setup(
     name="master",

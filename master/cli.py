@@ -15,9 +15,13 @@ import os
 import sys
 import getpass
 import logging
+import hashlib
+import base64
+import re
+import subprocess
+import shutil # import which
 
-VERSION = "0.2.4"
-
+VERSION          = "0.2.6"
 USER_HOME        = os.path.expanduser("~")
 MASTER_LIST      = f"{USER_HOME}/.config/master/list.txt"
 MASTER_LIST      = os.environ.get("MASTER_LIST", MASTER_LIST)
@@ -29,13 +33,6 @@ MASTER_LENGTH    = int(os.environ.get("MASTER_LENGTH", "6"))
 MASTER_CHUNKS    = int(os.environ.get("MASTER_CHUNKS", "6"))
 
 
-import os
-import sys
-import hashlib
-import base64
-import re
-import subprocess
-import shutil # import which
 
 
 class Clipboard:
