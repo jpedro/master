@@ -1,38 +1,54 @@
 #!/usr/bin/env python3
 """
 NAME
-    master -- Deterministic password generator.
+    master — Deterministic password generator.
+
+SYNOPSIS
+    Combines `f"{username}:{password}:{service}:{counter}" to generate
+    the same sha256 hash over and over again. This is then rendered
+    with `-` joining each 6 characters chunks. The field `counter` is
+    locked at `0` for now.
 
 USAGE
-    master                      With no arguments, prompt for service NAME
-    master NAME                 Gets the password for service NAME
-    master -l, --list           Lists all stored services
-    master -r, --remove NAME    Removes service NAME from the stored list
-    master -v, --version        Shows the version
-    master -h, --help           Shows this help
+    master                      # With no arguments, prompt for service NAME
+    master SERVICE              # Gets the password for SERVICE
+    master -l, --list           # Lists all stored services
+    master -r, --remove NAME    # Removes service NAME from the stored list
+    master -v, --version        # Shows the version
+    master -h, --help           # Shows this help
+
+ENVIRONMENT
+    MASTER_USERNAME             # Username
+    MASTER_PASSWORD             # Password
+    MASTER_SERVICE              # Service
+    MASTER_HOME                 # Config home (default: ´~/.config/master`)
+    MASTER_LIST                 # Service list (default: `$MASTER_HOME/list.txt`)
+    MASTER_SEPARATOR            # Chunk separator (default: `-`)
+    MASTER_LENGTH               # Chunk length (default: `6`)
+    MASTER_CHUNKS               # Chunk length (default: `6`)
+    MASTER_DEBUG                # Prints debug decisions
 """
 import os
+import re
 import sys
 import getpass
 import logging
 import hashlib
 import base64
-import re
 import subprocess
-import shutil # import which
+import shutil # imports which
 
-VERSION          = "0.2.6"
-USER_HOME        = os.path.expanduser("~")
-MASTER_LIST      = f"{USER_HOME}/.config/master/list.txt"
-MASTER_LIST      = os.environ.get("MASTER_LIST", MASTER_LIST)
-MASTER_DEBUG     = bool(os.environ.get("MASTER_DEBUG"))
+
+MASTER_VERSION   = "0.2.7"
+MASTER_HOME      = os.path.expanduser("~") + "/.config/master"
+MASTER_LIST      = os.environ.get("MASTER_LIST", MASTER_HOME + "/list.txt")
 MASTER_USERNAME  = os.environ.get("MASTER_USERNAME", "")
 MASTER_PASSWORD  = os.environ.get("MASTER_PASSWORD", "")
+MASTER_SERVICE   = os.environ.get("MASTER_SERVICE", "")
 MASTER_SEPARATOR = os.environ.get("MASTER_SEPARATOR", "-")
 MASTER_LENGTH    = int(os.environ.get("MASTER_LENGTH", "6"))
 MASTER_CHUNKS    = int(os.environ.get("MASTER_CHUNKS", "6"))
-
-
+MASTER_DEBUG     = bool(os.environ.get("MASTER_DEBUG"))
 
 
 class Clipboard:
@@ -56,7 +72,7 @@ class Clipboard:
     @classmethod
     def __pbcopy(cls, text):
         proc = subprocess.Popen(
-            ['pbcopy', 'w'],
+            ["pbcopy", "w"],
             stdin=subprocess.PIPE,
             close_fds=True,
         )
@@ -66,7 +82,7 @@ class Clipboard:
     @classmethod
     def __xclip(cls, text):
         proc = subprocess.Popen(
-            ['xclip', '-selection', 'c'],
+            ["xclip", "-selection", "c"],
             stdin=subprocess.PIPE,
             close_fds=True
         )
@@ -76,7 +92,7 @@ class Clipboard:
     @classmethod
     def __xsel(cls, text):
         proc = subprocess.Popen(
-            ['xsel', '-b', '-i'],
+            ["xsel", "-b", "-i"],
             stdin=subprocess.PIPE,
             close_fds=True
         )
@@ -87,30 +103,29 @@ class Master:
 
     def __init__(self, path: str):
         self.path = path
-        self.separator = "-"
-        self.length = 6
-        self.chunks = 6
+        self.separator = MASTER_SEPARATOR
+        self.length = MASTER_LENGTH
+        self.chunks = MASTER_CHUNKS
 
         self.services = None
         self.username = None
         self.password = None
 
 
-    def load(self) -> int:
+    def load(self):
         if not self.services is None:
-            return len(self.services)
+            return
 
         self.services = set()
         if not os.path.isfile(self.path):
-            # Logger.warn(f"File {self.path} doesn't exit.")
-            return 0
+            Logger.debug(f"File {self.path} doesn't exist")
+            return
 
         with open(self.path, "r") as f:
             for line in f.readlines():
                 self.services.add(line.strip())
 
         Logger.debug(f"Loaded file {self.path}")
-        return len(self.services)
 
 
     def add(self, service: str):
@@ -155,27 +170,19 @@ class Master:
         return password
 
 
-import os
-import sys
-import logging
-
-
 class Logger:
 
-    envDebug = bool(os.environ.get("MASTER_DEBUG"))
-    # print(f"--> envDebug: {envDebug}")
-
     @classmethod
-    def trace(cls, *dargs, **dkwargs):
-        cls.debug(f"Decor args: {dargs}")
-        cls.debug(f"Decor kwargs: {dkwargs}")
+    def trace(cls, *largs, **dargs):
+        Logger.debug(f"Trace list args: {largs}")
+        Logger.debug(f"Trace dict args: {dargs}")
         def inner(func):
-            cls.debug(f"Running func: {func}")
-            def wrap(*args,**kwargs):
-                cls.debug(f"Function args: {args}")
-                cls.debug(f"Function kwargs: {kwargs}")
+            Logger.debug(f"Trace hooking: {func}")
+            def wrap(*args, **kwargs):
+                Logger.debug(f"Trace call args: {args}")
+                Logger.debug(f"Trace call kwargs: {kwargs}")
                 result = func(*args, **kwargs)
-                cls.debug(f"Function result: {result}")
+                Logger.debug(f"Trace result: {result}")
 
                 return result
             return wrap
@@ -184,7 +191,7 @@ class Logger:
 
     @classmethod
     def debug(cls, text: str):
-        if not cls.envDebug: return
+        if not MASTER_DEBUG: return
         print(f"\033[38;5;242m==> {text}\033[0m", file=sys.stderr)
 
 
@@ -202,14 +209,13 @@ class Cli:
         self.master.separator = MASTER_SEPARATOR
 
 
-    def ask(self) -> (str, str):
+    def __ask(self) -> (str, str):
         if len(MASTER_USERNAME) > 0:
             username = MASTER_USERNAME
         else:
             prompt = "Enter your master username: "
             username = getpass.getpass(prompt=prompt)
 
-        # if len(self.PASSWORD) > 0:
         if len(MASTER_PASSWORD) > 0:
             password = MASTER_PASSWORD
         else:
@@ -219,51 +225,67 @@ class Cli:
         return (username, password)
 
 
-    @Logger.trace()
-    def get(self, service: str, counter: int = 0):
-        """Gets the deterministic password for SERVICE."""
-        username, password = self.ask()
+    @Logger.trace("get", help="Copies the password for SERVICE.")
+    def getCmd(self, *args):
+        """Copies the password for SERVICE."""
+        username, password = self.__ask()
 
-        self.master.add(service)
-        self.master.save()
+        service = args[0] if len(args) > 0 else MASTER_SERVICE
+        if service == "":
+            service = input("Enter your service name: ")
 
-        self.master.username = username
-        self.master.password = password
-        random = self.master.generate(service, counter)
-        Clipboard.copy(random)
-        print(f"Password for \033[32;1m{service}\033[0m was copied.")
-
-
-    @Logger.trace()
-    def start(self):
-        """Asks input for a new SERVICE."""
-        username, password = self.ask()
-        service = input("Enter your service name: ")
-
+        Logger.debug(f"Using username: {username}")
+        Logger.debug(f"Using password: {password}")
+        Logger.debug(f"Using service:  {service}")
         self.master.add(service)
         self.master.save()
 
         self.master.username = username
         self.master.password = password
         random = self.master.generate(service)
-        print(random)
+        Clipboard.copy(random)
+        print(f"Password for \033[32;1m{service}\033[0m copied.")
 
-    @Logger.trace()
-    def ls(self):
+
+    @Logger.trace(name="start", help="Password for a new SERVICE.")
+    def startCmd(self, *args):
+        """Asks input for a new SERVICE."""
+        username, password = self.__ask()
+
+        service = args[0] if len(args) > 0 else MASTER_SERVICE
+        if service == "":
+            service = input("Enter your service name: ")
+
+        Logger.debug(f"Using username: {username}")
+        Logger.debug(f"Using password: {password}")
+        Logger.debug(f"Using service:  {service}")
+        self.master.add(service)
+        self.master.save()
+
+        self.master.username = username
+        self.master.password = password
+        random = self.master.generate(service)
+        Clipboard.copy(random)
+        print(f"Password for \033[32;1m{service}\033[0m copied.")
+
+
+    @Logger.trace("ls", "Lists all services.")
+    def listCmd(self, *args):
         """Lists all stored services."""
         self.master.load()
         for service in self.master.services:
             print(service)
 
 
-    @Logger.trace()
-    def version(self):
+    @Logger.trace(version=MASTER_VERSION)
+    def versionCmd(self, *args):
         """Prints the version."""
-        print(f"v{VERSION}")
+        Logger.debug(f"Using args: {args}")
+        print(f"v{MASTER_VERSION}")
 
 
     @Logger.trace()
-    def remove(self, service: str):
+    def removeCmd(self, service: str, *args):
         """Removes SERVICE from the stored list."""
         self.master.remove(service)
         self.master.save()
@@ -271,24 +293,29 @@ class Cli:
 
 def main():
     cli = Cli()
-    cmd = sys.argv[1] if len(sys.argv) > 1 else None
+    name = sys.argv[1] if len(sys.argv) > 1 else "start"
     args = sys.argv[1:]
 
+    if hasattr(cli, name + "Cmd"):
+        args = sys.argv[2:]
+        Logger.debug("Using the new way")
+        func = getattr(cli, name + "Cmd")
+        Logger.debug(f"Found name {name}: {func}({args})")
+        return func(*args)
+
+    Logger.debug("Using the old (lookup) way")
+    cmd = sys.argv[1] if len(sys.argv) > 1 else None
     if cmd is None:
-        cli.start()
-        return
+        return cli.startCmd()
 
     if cmd in ["-h", "--help", "help"]:
-        print(__doc__)
-        return
+        return print(__doc__)
 
     if cmd in ["-v", "--version", "version"]:
-        print(f"v{VERSION}")
-        return
+        return cli.versionCmd()
 
     if cmd in ["-l","-ls", "--ls", "--list"]:
-        cli.ls()
-        return
+        return cli.listCmd()
 
     if cmd in ["-r", "--rm", "--remove", "-d", "--delete"]:
         name = args[1]
@@ -296,9 +323,9 @@ def main():
             print("Usage: master --rm NAME")
             return 1
 
-        return cli.remove(args[1])
+        return cli.removeCmd(args[1])
 
-    cli.get(cmd)
+    cli.getCmd(cmd)
 
 
 if __name__ == "__main__":
