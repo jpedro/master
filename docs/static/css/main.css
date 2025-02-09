@@ -1,0 +1,83 @@
+body {
+    max-width: 800px;
+    margin: 40px auto;
+}
+h1 {
+    margin-bottom: 1rem;
+}
+form {
+    margin: 0;
+    padding: 0;
+}
+input {
+    padding: 5px;
+    border-radius: 5px;
+    margin: 5px 0;
+    font-size: 1.2em;
+    width: 700px; /* becomes 712px due to padding 2 x 5px + 2 x 1px border*/
+    border: 1px solid #aaa;
+}
+#reset {
+    display: none;
+    float: right;
+    position: relative;
+    top: -3rem;
+    height: 0;
+}
+#details {
+    display: none;
+    margin: 0;
+}
+#tips {
+    margin: 20px 0;
+    padding: 5px;
+    font-size: 1.2em;
+}
+code {
+    margin: 0 5px;
+    padding: 5px 10px;
+    background: #ddd;
+    color: #000;
+    border-radius: 3px;
+}
+#result {
+    background: #f7dc6f;
+    ---background: #fad7a0;
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 1.5em;
+    ---border: 4px solid #ccc;
+    text-align: center;
+    ---display: none;
+    ---width: 672px; /* Plus 2 x 20px padding  */
+    height: 2.5em;
+    transition: background-color 0.05s ease;
+    color: #000;
+    user-select: all;
+}
+#result.new {
+    --background: #f1c40f;
+    background: #d35400;
+    color: #fff;
+}
+#result.visible {
+    ---background: #d35400;
+    ---color: #fff;
+    background: #f1c40f;
+}
+button {
+    display: inline;
+    width: fit-content;
+    padding: 0.1rem 0.5rem;
+}
+span.format {
+    background-color: #ddd;
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 0.7em;
+    margin-left: 0.2em;
+}
+span.format.selected {
+    background-color: #080;
+    color: #fff;
+}
