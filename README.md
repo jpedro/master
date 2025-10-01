@@ -84,3 +84,4 @@ between.
       same email address. Plus, not 100% sure if one wants to tie
       passwords to an email.
 - [ ] Lock (close) the master page after 30 seconds of inactivity.
+
