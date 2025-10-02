@@ -1,3 +1,4 @@
+const $services = document.getElementById("services");
 const $creds    = document.getElementById("creds");
 const $username = document.getElementById("username");
 const $password = document.getElementById("password");
@@ -7,12 +8,12 @@ const $result   = document.getElementById("result");
 const $format   = document.getElementById("format");
 const $copy     = document.getElementById("copy");
 const $reset    = document.getElementById("reset");
+const EMPTY_SERVICE = "(Fill in the service)";
 // const $normal   = document.getElementById("normal");
 // const $simple   = document.getElementById("simple");
 // const $redacted = document.getElementById("redacted");
 
-const EMPTY_SERVICE = "(Fill in the service)";
-
+let services = JSON.parse(localStorage.getItem("services") || "{}");
 let generated = null;
 let format = "visible";
 const formats = {
@@ -22,10 +23,61 @@ const formats = {
 };
 $result.innerText = EMPTY_SERVICE;
 
+function loadServices() {
+    console.log("services", services);
+    for (const name in services) {
+        const el = document.createElement("li");
+        el.innerHTML = `<a href="#${name}">${name}</a>`;
+        el.addEventListener("click", onService);
+        console.log("service", name, services[name]);
+        $services.prepend(el);
+    }
+}
+
+function saveService(name) {
+    name = name.trim();
+    if (name.length < 1) {
+        return;
+    }
+
+    console.log("service", name, services[name]);
+    if (services[name]) {
+        return;
+    }
+
+    const service = {
+        name: name,
+    };
+    services[name] = service;
+    const el = document.createElement("li");
+    el.innerHTML = `<a href="#${name}">${name}</a>`;
+    el.addEventListener("click", onService);
+    $services.prepend(el);
+    localStorage.setItem("services", JSON.stringify(services));
+}
+
+function onService(ev) {
+    ev.stopPropagation();
+    ev.preventDefault();
+    const name = ev.target.innerText;
+    $service.value = name;
+    $service.focus();
+    $service.select();
+    // onServiceKey();
+    generate();
+}
+
+function resetServices() {
+    services = {};
+    localStorage.setItem("services", JSON.stringify(services));
+    $services.innerHTML = "";
+}
+
 function resetCreds() {
     $username.value = "";
     $password.value = "";
     saveCreds();
+    resetServices();
     $username.focus().select();
 }
 
@@ -69,12 +121,14 @@ function showCreds(value) {
         // $service.blur();
         // $username.focus();
         // $username.select();
-        return
+        resetServices();
+        return;
     } else {
         // console.log("Hide creds");
         $creds.style.display = "none";
         $reset.style.display = "inline-block";
         $details.style.display = "block";
+        loadServices();
         // console.log("$service", $service);
     }
     $username.blur();
@@ -317,11 +371,18 @@ $copy.onclick = (ev) => {
     return false;
 };
 
+function onServiceKey() {
+    copyPassword();
+    saveService($service.value);
+}
+
 $service.onkeyup = (ev) => {
     if (ev.key === "Enter" && isKeyboardEmpty(ev)) {
         console.log("Enter");
         stopIt(ev);
-        copyPassword();
+        // copyPassword();
+        // saveService($service.value);
+        onServiceKey();
         return false;
     }
 
