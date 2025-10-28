@@ -1,13 +1,13 @@
 const $services = document.getElementById("services");
-const $creds    = document.getElementById("creds");
+const $creds = document.getElementById("creds");
 const $username = document.getElementById("username");
 const $password = document.getElementById("password");
-const $details  = document.getElementById("details");
-const $service  = document.getElementById("service");
-const $result   = document.getElementById("result");
-const $format   = document.getElementById("format");
-const $copy     = document.getElementById("copy");
-const $reset    = document.getElementById("reset");
+const $details = document.getElementById("details");
+const $service = document.getElementById("service");
+const $result = document.getElementById("result");
+const $format = document.getElementById("format");
+const $copy = document.getElementById("copy");
+const $reset = document.getElementById("reset");
 const EMPTY_SERVICE = "(Fill in the service)";
 // const $normal   = document.getElementById("normal");
 // const $simple   = document.getElementById("simple");
@@ -17,9 +17,9 @@ let services = JSON.parse(localStorage.getItem("services") || "{}");
 let generated = null;
 let format = "visible";
 const formats = {
-    "visible": EMPTY_SERVICE,
-    "redactd": EMPTY_SERVICE,
-    "simpler": EMPTY_SERVICE,
+    visible: EMPTY_SERVICE,
+    redactd: EMPTY_SERVICE,
+    simpler: EMPTY_SERVICE,
 };
 $result.innerText = EMPTY_SERVICE;
 
@@ -76,6 +76,9 @@ function resetServices() {
 function resetCreds() {
     $username.value = "";
     $password.value = "";
+    $service.value = "";
+    $result.innerText = EMPTY_SERVICE;
+
     saveCreds();
     resetServices();
     $username.focus().select();
@@ -88,7 +91,9 @@ function selectFormat() {
         span.classList.remove("selected");
     }
 
-    const selected = document.getElementById(format);
+    const selected = (formats in formats)
+        ? document.getElementById(format)
+        : document.getElementById("visible")
     selected.classList.add("selected");
 }
 
@@ -107,6 +112,7 @@ function saveCreds() {
         localStorage.removeItem("password");
         showCreds(true);
     }
+    history.pushState({}, "", "/");
 
     return false;
 }
@@ -177,12 +183,12 @@ async function sha256(message) {
 
 function isKeyboardEmpty(ev) {
     return (
-        ev.charCode    === 0
-        && ev.metaKey  === false
-        && ev.shiftKey === false
-        && ev.ctrlKey  === false
-    )
-};
+        ev.charCode === 0 &&
+        ev.metaKey === false &&
+        ev.shiftKey === false &&
+        ev.ctrlKey === false
+    );
+}
 
 function copyPassword() {
     let value = formats[format];
@@ -225,8 +231,12 @@ function setValue(value) {
     }
 
     const visible = parts.join("-");
-    const simpler = value.slice(0, 4) + "+" + value.slice(4, 8) + "-" + value.slice(8, 12);
-    const redactd = visible.slice(0, 2) + "****-******-******-******-******-****" + visible.slice(-2);
+    const simpler =
+        value.slice(0, 4) + "+" + value.slice(4, 8) + "-" + value.slice(8, 12);
+    const redactd =
+        visible.slice(0, 2) +
+        "****-******-******-******-******-****" +
+        visible.slice(-2);
 
     formats["visible"] = visible;
     formats["redactd"] = redactd;
@@ -244,44 +254,42 @@ function setValue(value) {
 function correct(value) {
     const CHARS_SYMBOLS = "-+";
     const CHARS_NUMBERS = "0123456789";
-    const CHARS_LOWERS  = "abcdefghijklmnopqrstuvwxyz";
-    const CHARS_UPPERS  = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const CHARS_LOWERS = "abcdefghijklmnopqrstuvwxyz";
+    const CHARS_UPPERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     let hasSymbol = false;
     let hasNumber = false;
-    let hasLower  = false;
-    let hasUpper  = false;
+    let hasLower = false;
+    let hasUpper = false;
 
     for (let i = 0; i < value.length; i++) {
         const char = value[i];
-        const isSymbol = CHARS_SYMBOLS.indexOf(char)    > -1;
-        const isNumber = CHARS_NUMBERS.indexOf(char)    > -1;
-        const isLower  = CHARS_LOWERS.indexOf(char)     > -1;
-        const isUpper  = CHARS_UPPERS.indexOf(char)     > -1;
+        const isSymbol = CHARS_SYMBOLS.indexOf(char) > -1;
+        const isNumber = CHARS_NUMBERS.indexOf(char) > -1;
+        const isLower = CHARS_LOWERS.indexOf(char) > -1;
+        const isUpper = CHARS_UPPERS.indexOf(char) > -1;
 
-        hasSymbol = isSymbol    || hasSymbol;
-        hasNumber = isNumber    || hasNumber;
-        hasLower  = isLower     || hasLower;
-        hasUpper  = isUpper     || hasUpper;
+        hasSymbol = isSymbol || hasSymbol;
+        hasNumber = isNumber || hasNumber;
+        hasLower = isLower || hasLower;
+        hasUpper = isUpper || hasUpper;
     }
 
     // console.log("Fixing symbol");
     if (hasSymbol === false) value = replace(value, CHARS_SYMBOLS, -4);
     if (hasNumber === false) value = replace(value, CHARS_NUMBERS, -3);
-    if (hasLower === false)  value = replace(value, CHARS_LOWERS,  -2);
-    if (hasUpper === false)  value = replace(value, CHARS_UPPERS,  -1);
+    if (hasLower === false) value = replace(value, CHARS_LOWERS, -2);
+    if (hasUpper === false) value = replace(value, CHARS_UPPERS, -1);
 
     return value;
 }
 
 function replace(value, chars, position) {
     const index = value.length + position;
-    const code  = value.charCodeAt(index);
-    const rand  = Math.floor(code % chars.length);
+    const code = value.charCodeAt(index);
+    const rand = Math.floor(code % chars.length);
 
-    return value.substring(0, index) +
-        chars[rand] +
-        value.substring(index + 1);
+    return value.substring(0, index) + chars[rand] + value.substring(index + 1);
 }
 
 function generate() {
@@ -299,26 +307,33 @@ function generate() {
         0,
     ].join(":");
 
-    sha256(source).then(raw => {
-        const encoded = btoa(raw);
-        const regex = /[^0-9A-Za-z]/g;
-        const clean = encoded.replace(regex, "");
-        // console.log("Source   ", source);
-        // console.log("Raw      ", raw);
-        // console.log("Encoded  ", encoded);
-        // console.log("Clean    ", clean);
-        setValue(clean);
-    })
-    .catch(err => {
-        console.error("err", err);
-    });
+    sha256(source)
+        .then((raw) => {
+            const encoded = btoa(raw);
+            const regex = /[^0-9A-Za-z]/g;
+            const clean = encoded.replace(regex, "");
+            // console.log("Source   ", source);
+            // console.log("Raw      ", raw);
+            // console.log("Encoded  ", encoded);
+            // console.log("Clean    ", clean);
+            setValue(clean);
+        })
+        .catch((err) => {
+            console.error("err", err);
+        });
 }
 
 function toggleFormat() {
     switch (format) {
-    case "visible": format = "redactd"; break;
-    case "redactd": format = "simpler"; break;
-    case "simpler": format = "visible"; break;
+        case "visible":
+            format = "redactd";
+            break;
+        case "redactd":
+            format = "simpler";
+            break;
+        case "simpler":
+            format = "visible";
+            break;
     }
 
     selectFormat();
@@ -409,7 +424,14 @@ document.onkeyup = (ev) => {
         return false;
     }
 
-    console.log("What's this?", ev);
+    console.log("What's this?", {
+        key: ev.key,
+        altKey: ev.altKey,
+        charCode: ev.charCode,
+        metaKey: ev.metaKey,
+        shiftKey: ev.shiftKey,
+        ctrlKey: ev.ctrlKey,
+    });
 };
 
 loadCreds();
