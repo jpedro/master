@@ -81,17 +81,18 @@ function resetCreds() {
 
     saveCreds();
     resetServices();
-    $username.focus().select();
+    $username.focus();
+    $username.select();
 }
 
 function selectFormat() {
-    const spans = document.getElementsByClassName("format");
-    for (let i = 0; i < spans.length; i++) {
-        const span = spans[i];
-        span.classList.remove("selected");
+    const els = document.getElementsByClassName("format");
+    for (let i = 0; i < els.length; i++) {
+        const el = els[i];
+        el.classList.remove("selected");
     }
 
-    const selected = (formats in formats)
+    const selected = (format in formats)
         ? document.getElementById(format)
         : document.getElementById("visible")
     selected.classList.add("selected");
@@ -152,10 +153,8 @@ function loadCreds() {
     $password.value = password;
 
     if (username.length > 0 && password.length > 0) {
-        // console.log("We have creds");
         showCreds(false);
     } else {
-        // console.log("We miss creds");
         showCreds(true);
     }
 }
@@ -323,7 +322,13 @@ function generate() {
         });
 }
 
-function toggleFormat() {
+function showFormat() {
+    selectFormat();
+    localStorage.setItem("format", format);
+    $result.innerText = formats[format];
+}
+
+function nextFormat() {
     switch (format) {
         case "visible":
             format = "redactd";
@@ -336,9 +341,10 @@ function toggleFormat() {
             break;
     }
 
-    selectFormat();
-    localStorage.setItem("format", format);
-    $result.innerText = formats[format];
+    showFormat();
+    // selectFormat();
+    // localStorage.setItem("format", format);
+    // $result.innerText = formats[format];
 }
 
 function stopIt(ev) {
@@ -376,7 +382,7 @@ $reset.onclick = (ev) => {
 
 $format.onclick = (ev) => {
     stopIt(ev);
-    toggleFormat();
+    nextFormat();
     return false;
 };
 
@@ -391,6 +397,20 @@ function onServiceKey() {
     saveService($service.value);
 }
 
+const buttons = document.getElementsByClassName("format");
+// console.log("buttons", buttons);
+// console.log("buttons[0]", buttons[0]);
+for (let el of buttons) {
+    console.log("el", el);
+    el.addEventListener("click", ev => {
+        stopIt(ev);
+        const value = ev.target.id;
+        format = value;
+        console.log("format", value, format);
+        showFormat();
+    });
+}
+
 $service.onkeyup = (ev) => {
     if (ev.key === "Enter" && isKeyboardEmpty(ev)) {
         console.log("Enter");
@@ -403,7 +423,7 @@ $service.onkeyup = (ev) => {
 
     if (ev.key === "Alt" && isKeyboardEmpty(ev)) {
         stopIt(ev);
-        toggleFormat();
+        nextFormat();
         return false;
     }
 
@@ -420,7 +440,7 @@ document.onkeyup = (ev) => {
 
     if (ev.key === "Alt" && isKeyboardEmpty(ev)) {
         stopIt(ev);
-        toggleFormat();
+        nextFormat();
         return false;
     }
 
