@@ -3,9 +3,10 @@ name: Deploy pages
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-    - master
+  ## We no longer use pages for this. Just good ol' static nginx sites.
+  # push:
+  #   branches:
+  #   - master
 
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
