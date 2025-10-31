@@ -56,6 +56,13 @@ function saveService(name) {
     localStorage.setItem("services", JSON.stringify(services));
 }
 
+function forService(name) {
+    $service.value = name;
+    $service.focus();
+    $service.select();
+    generate();
+}
+
 function onService(ev) {
     ev.stopPropagation();
     ev.preventDefault();
@@ -92,9 +99,10 @@ function selectFormat() {
         el.classList.remove("selected");
     }
 
-    const selected = (format in formats)
-        ? document.getElementById(format)
-        : document.getElementById("visible")
+    const selected =
+        format in formats
+            ? document.getElementById(format)
+            : document.getElementById("visible");
     selected.classList.add("selected");
 }
 
@@ -118,8 +126,8 @@ function saveCreds() {
     return false;
 }
 
-function showCreds(value) {
-    if (value) {
+function showCreds(visible) {
+    if (visible) {
         // console.log("Show creds");
         $creds.style.display = "block";
         $reset.style.display = "none";
@@ -130,20 +138,19 @@ function showCreds(value) {
         // $username.select();
         resetServices();
         return;
-    } else {
-        // console.log("Hide creds");
-        $creds.style.display = "none";
-        $reset.style.display = "inline-block";
-        $details.style.display = "block";
-        loadServices();
-        // console.log("$service", $service);
     }
+
+    // console.log("Hide creds");
+    $creds.style.display = "none";
+    $reset.style.display = "inline-block";
+    $details.style.display = "block";
+    loadServices();
     $username.blur();
     $service.focus();
     $service.select();
 }
 
-function loadCreds() {
+function loadCreds(service) {
     const username = localStorage.getItem("username") || "";
     const password = localStorage.getItem("password") || "";
     format = localStorage.getItem("format") || "redactd";
@@ -154,6 +161,7 @@ function loadCreds() {
 
     if (username.length > 0 && password.length > 0) {
         showCreds(false);
+        forService(service);
     } else {
         showCreds(true);
     }
@@ -402,7 +410,7 @@ const buttons = document.getElementsByClassName("format");
 // console.log("buttons[0]", buttons[0]);
 for (let el of buttons) {
     console.log("el", el);
-    el.addEventListener("click", ev => {
+    el.addEventListener("click", (ev) => {
         stopIt(ev);
         const value = ev.target.id;
         format = value;
@@ -454,4 +462,6 @@ document.onkeyup = (ev) => {
     });
 };
 
-loadCreds();
+const search = new URLSearchParams(location.search);
+const service = search.get("service");
+loadCreds(service);
