@@ -198,6 +198,7 @@ function isKeyboardEmpty(ev) {
 }
 
 function copyPassword() {
+    history.pushState({}, "", "/?service=" + encodeURIComponent($service.value));
     let value = formats[format];
     if (format === "redactd") {
         value = formats["visible"];
@@ -443,6 +444,7 @@ document.onkeyup = (ev) => {
         console.log("Enter");
         stopIt(ev);
         copyPassword();
+        console.log("$service.value", $service.value);
         return false;
     }
 
