@@ -27,3 +27,7 @@ test: build ### Tests the package locally
 .PHONY: release
 release: build ### Deploys the package to pypi
 	python3 -m twine upload dist/*
+
+.PHONY: live
+live: ### Does something
+	boom --source docs --domain master.jpedro.dev
